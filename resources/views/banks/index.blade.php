@@ -44,7 +44,7 @@
                     <div class="col-md-3 mb-2">
                         <label for="field" class="form-label">Urutkan Berdasarkan</label>
                         <select name="field" id="field" class="form-select">
-                            @foreach (getModelAttributes('Bank', ['logo']) as $atr)
+                            @foreach (getModelAttributes('Bank', ['logo', 'account_id']) as $atr)
                             <option value="{{$atr}}" {{$filter->field == $atr ? 'selected' : ''}}>{{toPascalCase($atr)}}</option>
                             @endforeach
                         </select>

@@ -10,7 +10,7 @@ class Bank extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-
+    protected $connection = 'osano';
     public $incrementing = false;
     protected $keyType = 'string';
 

@@ -25,7 +25,7 @@ return [
     ],
 
     'company' => [
-      'name' => 'Butik Rahmat Collection',
-      'code' => 'BRC',
+      'name' => 'PT Rizq Sahara Multindo',
+      'code' => 'RSM',
     ],
 ];

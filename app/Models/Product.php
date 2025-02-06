@@ -11,7 +11,8 @@ class Product extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-    protected $table = 'produk';
+    protected $connection = 'osano';
+    protected $table = 'products';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -22,20 +23,19 @@ class Product extends Model
     {
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
+            $model->slug = (string) Str::slug($model->name);
+        });
+        static::updating(function ($model) {
+            $model->slug = (string) Str::slug($model->name);
         });
         static::deleting(function ($model) {
             if ($model->image) {
                 Storage::disk('public')->delete($model->image);
             }
-            $model->stock->delete();
         });
     }
 
-    public function stock(){
-        return $this->hasOne(Stock::class, 'produk_id');
-    }
-
-    public function category(){
-        return $this->belongsTo(ProductCategory::class, 'produk_kategori_id');
+    public function unit(){
+        return $this->belongsTo(Unit::class,'unit_id');
     }
 }

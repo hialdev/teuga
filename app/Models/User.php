@@ -21,9 +21,6 @@ class User extends Authenticatable
             if ($model->image) {
                 Storage::disk('public')->delete($model->image);
             }
-            if($model->orders->count() <= 0 || $model->customOrders->count() <= 0) {
-                $model->user->delete();
-            }
         });
     }
 
@@ -57,12 +54,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-
-    public function orders(){
-        return $this->hasMany(Order::class, 'user_id');
-    }
-
-    public function customOrders() {
-        return $this->hasMany(CustomOrder::class, 'user_id');
+    public function applications()
+    {
+        // Mengambil nama permission yang dimiliki oleh user dan mencocokkannya dengan nama application
+        return $this->roles[0]->permissions->map(function ($permission) {
+            return Application::where('name', $permission->name)->first();
+        });
     }
 }

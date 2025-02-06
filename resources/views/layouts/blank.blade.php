@@ -10,7 +10,7 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Tanur Muthmainnah') }}</title>
+    <title>{{ config('app.name', 'Sahara Information System') }}</title>
 
     <!-- Favicon icon-->
     <link rel="shortcut icon" type="image/png" href="/assets/images/logos/favicon.png" />

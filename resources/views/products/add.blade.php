@@ -1,4 +1,7 @@
 @extends('layouts.base')
+@section('css')
+<link rel="stylesheet" href="{{env('APP_URL')}}/assets/libs/select2/dist/css/select2.min.css">
+@endsection
 @section('content')
     <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
         <div class="card-body px-4 py-3">
@@ -83,7 +86,7 @@
                             <div class="input-group">
                                 <span class="input-group-text px-6" id="basic-addon1"><i
                                         class="ti ti-text-caption fs-6"></i></span>
-                                <input type="text" name="slug" value="{{old('slug')}}" class="form-control ps-2" placeholder="Slug Product">
+                                <input type="text" name="slug" value="{{old('slug')}}" class="form-control ps-2" placeholder="Slug Product" disabled>
                             </div>
                             @error('slug')
                                 <span class="invalid-feedback" role="alert">
@@ -105,47 +108,29 @@
                                 </span>
                             @enderror
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Harga</label>
-                            <div class="input-group">
+                        <div class="p-3 rounded-3 bg-primary-subtle mb-2">
+                            <label for="unit_id" class="form-label">Satuan</label>
+                            <div class="input-group mb-2">
                                 <span class="input-group-text px-6" id="basic-addon1"><i
-                                        class="ti ti-users fs-6"></i></span>
-                                <input type="text" name="price" value="{{old('price')}}" class="form-control ps-2">
+                                        class="ti ti-package fs-6"></i></span>
+                                <div style="flex-grow:1">
+                                    <select name="unit_id" id="unit" class="select2-normal form-select">
+                                        <option value="">-- Pilih Satuan --</option>
+                                        @foreach ($units as $unit)
+                                            <option value="{{$unit->id}}" {{ $unit->id == old('unit_id') ? 'selected' : '' }}>
+                                                {{ $unit->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                            @error('price')
-                                <span class="invalid-feedback" role="alert">
-                                    {{ $message }}
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-4">
-                            <label for="category" class="form-label">Kategori</label>
-                            <select name="category" id="category" class="form-select">
-                                <option value="">Pilih Kategori</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{$category->id}}" {{$category->id == old('category') ? 'selected' : ''}}>{{$category->nama}}</option>
-                                @endforeach
-                            </select>
-                            <div class="d-flex align-items-center gap-2 mt-2">
-                                Tidak menemukan kategori ? 
+                            <div class="d-flex align-items-center gap-2">
+                                Tidak menemukan Satuan ? 
                                 <button type="button" class="btn btn-sm text-primary bg-primary-subtle"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#addProductCategoryModal"
-                                >Tambah Kategori</button>
+                                    data-bs-target="#addSatuanModal"
+                                >Tambah Satuan</button>
                             </div>
-                        </div>
-                        <div class="mb-4 rounded-3 p-3 bg-primary-subtle">
-                            <label class="form-label fw-semibold">Stock Tersedia</label>
-                            <div class="input-group">
-                                <span class="input-group-text px-6" id="basic-addon1"><i
-                                        class="ti ti-shopping-cart fs-6"></i></span>
-                                <input type="number" name="stock" value="{{old('stock')}}" class="form-control ps-2">
-                            </div>
-                            @error('stock')
-                                <span class="invalid-feedback" role="alert">
-                                    {{ $message }}
-                                </span>
-                            @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">
                             Tambah Produk
@@ -155,9 +140,26 @@
             </div>
         </div>
     </div>
-    @include('products.addmodal', ['id' => 'addProductCategoryModal'])
+    @include('units.addmodal', ['id' => 'addSatuanModal'])
+
 @endsection
 @section('scripts')
+    <script src="{{env('APP_URL')}}/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="{{env('APP_URL')}}/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').each(function () {
+                let modal = $(this).closest('.modal'); // Cari modal terdekat
+                $(this).select2({
+                    dropdownParent: modal // Pasang dropdown di dalam modal
+                });
+            });
+            $('.select2-normal').each(function () {
+                let modal = $(this).closest('.modal'); // Cari modal terdekat
+                $(this).select2();
+            });
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.querySelector('input[type="file"][name="image"]');

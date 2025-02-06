@@ -6,6 +6,7 @@ if (!function_exists('getModelAttributes')) {
     function getModelAttributes($modelName, $excepts)
     {
         $excepts = $excepts ?? [];
+
         // Validasi input nama model
         if (empty($modelName) || !preg_match('/^[a-zA-Z0-9_]+$/', $modelName)) {
             return [];
@@ -22,14 +23,13 @@ if (!function_exists('getModelAttributes')) {
         $model = new $modelClass();
 
         // Pastikan tabel model ada
-        if (!Schema::hasTable($model->getTable())) {
+        if (!Schema::connection('osano')->hasTable($model->getTable())) {
             return [];
         }
-
         // Ambil nama tabel dan kolom
         $table = $model->getTable();
-        $columns = Schema::getColumnListing($table);
-
+        $columns = Schema::connection('osano')->getColumnListing($table);
+        
         // Keluarkan kolom 'id' dari daftar
         return array_values(array_filter($columns, fn($column) => $column !== 'id' && !in_array($column, $excepts)));
 
@@ -45,6 +45,27 @@ if (!function_exists('toPascalCase')){
         $pascalCaseString = implode(' ', array_map('ucwords', $words));
         // Pastikan huruf pertama adalah kapital
         return $pascalCaseString;
+    }
+}
+
+if (!function_exists('urlApp')) {
+    function urlApp($code, $path = '')
+    {
+        if (!$path) $path = '';
+        if (!class_exists(\App\Models\Application::class) || !Schema::hasTable('applications')) {
+            return null;
+        }
+
+        $app = \App\Models\Application::where('code', $code)->first();
+        return $app ? $app->url.$path : null;
+    }
+}
+
+if (!function_exists('filePath')) {
+    function filePath($data)
+    {
+        $path = urlApp('SSO','/storage/'.$data);
+        return $path;
     }
 }
 
@@ -89,7 +110,7 @@ if (!function_exists('generateCode')) {
     {
         $companyCode = $companyCode ?? config('al.company')['code']; // Default ke config
         $month = $month ?? date('n'); // Default ke bulan sekarang
-        $year = $year ?? date('y');  // Default ke tahun sekarang
+        $year = $year ?? date('Y');  // Default ke tahun sekarang
 
         $formattedNumber = str_pad($number, 3, '0', STR_PAD_LEFT);
         $romanMonths = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
@@ -121,5 +142,38 @@ if (!function_exists('isPdf')) {
     function isPdf($fileName)
     {
         return str_ends_with($fileName, '.pdf');
+    }
+}
+
+if (!function_exists('getTypeFile')) {
+    function getTypeFile($fileName)
+    {
+        $data = ['xlsx', 'xls', 'csv'];
+        $report = ['ppt', 'pptx', 'pdf'];
+        $image = ['png', 'webp', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'svg'];
+        $zip = ['zip', 'rar'];
+
+        // Ambil ekstensi file (tanpa titik)
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (in_array($extension, $data)) {
+            return 'data';
+        } elseif (in_array($extension, $report)) {
+            return 'report';
+        } elseif (in_array($extension, $image)) {
+            return 'image';
+        } elseif (in_array($extension, $zip)) {
+            return 'zip';
+        } else {
+            return 'file';
+        }
+    }
+}
+
+if (!function_exists('getExt')) {
+    function getExt($fileName)
+    {
+        // Ambil ekstensi file (tanpa titik)
+        return strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     }
 }

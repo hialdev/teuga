@@ -11,7 +11,7 @@
                         <div class="d-flex align-items-center mb-7">
                             <div class="rounded-circle overflow-hidden me-6">
                                 <img src="{{ auth()->user() && auth()->user()->image ? '/storage/' . auth()->user()->image : '/assets/images/profile/user-1.jpg' }}"
-                                    alt="" width="40" height="40">
+                                    alt="" width="40" height="40" class="object-fit-cover">
                             </div>
                             <h5 class="fw-semibold mb-0 fs-5">Selamat Datang
                                 {{ auth()->user() ? auth()->user()->name : '"Silahkan Login"' }}!</h5>
@@ -19,13 +19,13 @@
                         <div class="d-flex align-items-center">
                             <div class="border-end pe-4 border-muted border-opacity-10">
                                 <h3 class="mb-1 fw-semibold fs-8 d-flex align-content-center">
-                                    {{ auth()->user() ? \App\Models\Order::where('user_id', auth()->user()->id)->count() : '0' }}
+                                    123
                                 </h3>
                                 <p class="mb-0 text-dark">Pesanan Barang Anda</p>
                             </div>
                             <div class="ps-4">
                                 <h3 class="mb-1 fw-semibold fs-8 d-flex align-content-center">
-                                    {{ auth()->user() ? \App\Models\CustomOrder::where('user_id', auth()->user()->id)->count() : '0' }}
+                                    123
                                 </h3>
                                 <p class="mb-0 text-dark">Pesanan Khusus</p>
                             </div>
@@ -49,7 +49,9 @@
                         <span>
                             <i class="ti ti-layout-grid fs-8"></i>
                         </span>
-                        <h3 class="card-title mt-3 mb-0 text-white">{{\App\Models\Order::where('user_id', auth()->user()->id ?? '8124124123123')->where('status', '4')->count() + \App\Models\CustomOrder::where('user_id', auth()->user()->id ?? '8124124123123')->where('status', '5')->count()}}</h3>
+                        <h3 class="card-title mt-3 mb-0 text-white">
+                            123
+                        </h3>
                         <p class="card-text text-white-50 fs-3 fw-normal">
                             Total Pesanan Selesai
                         </p>
@@ -62,7 +64,7 @@
                         <span>
                             <i class="ti ti-credit-card-off fs-8"></i>
                         </span>
-                        <h3 class="card-title mt-3 mb-0 text-dark">{{\App\Models\Order::where('user_id', auth()->user()->id ?? '8124124123123')->where('status', '0')->count()}}</h3>
+                        <h3 class="card-title mt-3 mb-0 text-dark">123</h3>
                         <p class="card-text text-dark-50 fs-3 fw-normal">
                             Pesanan Belum Dibayar
                         </p>
@@ -75,7 +77,7 @@
                         <span>
                             <i class="ti ti-clock fs-8"></i>
                         </span>
-                        <h3 class="card-title mt-3 mb-0 text-white">{{\App\Models\Order::where('user_id', auth()->user()->id ?? '8124124123123')->where('status', '2')->count()}}</h3>
+                        <h3 class="card-title mt-3 mb-0 text-white">123</h3>
                         <p class="card-text text-white-50 fs-3 fw-normal">
                             Pesanan Dalam Proses
                         </p>
@@ -88,7 +90,7 @@
                         <span>
                             <i class="ti ti-credit-card fs-8"></i>
                         </span>
-                        <h3 class="card-title mt-3 mb-0 text-white">{{\App\Models\CustomOrder::where('user_id', auth()->user()->id ?? 'x')->where('status', '!=', 5)->count()}}</h3>
+                        <h3 class="card-title mt-3 mb-0 text-white">123</h3>
                         <p class="card-text text-white-50 fs-3 fw-normal">
                             Pesanan Khusus belum Lunas
                         </p>
@@ -101,7 +103,7 @@
                         <span>
                             <i class="ti ti-tag fs-8"></i>
                         </span>
-                        <h3 class="card-title mt-3 mb-0 text-white">{{\App\Models\CustomOrder::where('user_id', auth()->user()->id ?? 'x')->where('status', '=', 1)->count()}}</h3>
+                        <h3 class="card-title mt-3 mb-0 text-white">122</h3>
                         <p class="card-text text-white-50 fs-3 fw-normal">
                             Penentapan Harga Pesanan Khusus
                         </p>
@@ -114,7 +116,7 @@
                         <span>
                             <i class="ti ti-truck-return fs-8"></i>
                         </span>
-                        <h3 class="card-title mt-3 mb-0 text-white">{{\App\Models\Retur::where('user_id', auth()->user()->id ?? 123423)->count()}}</h3>
+                        <h3 class="card-title mt-3 mb-0 text-white">123</h3>
                         <p class="card-text text-white-50 fs-3 fw-normal">
                             Total Pengembalian Pesanan
                         </p>
@@ -127,7 +129,7 @@
     <section>
         <div class="row">
             <div class="col-md-4 d-flex align-items-stretch">
-                <a href="{{route('product.etalase')}}" class="card text-bg-primary text-white w-100 card-hover">
+                <a href="{{route('home')}}" class="card text-bg-primary text-white w-100 card-hover">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <i class="ti ti-layout-grid display-6"></i>
@@ -147,7 +149,7 @@
                 </a>
             </div>
             <div class="col-md-4 d-flex align-items-stretch">
-                <a href="{{route('order.my')}}" class="card text-bg-info text-white w-100 card-hover">
+                <a href="{{route('home')}}" class="card text-bg-info text-white w-100 card-hover">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <i class="ti ti-shopping-cart display-6"></i>
@@ -165,7 +167,7 @@
                 </a>
             </div>
             <div class="col-md-4 d-flex align-items-stretch">
-                <a href="{{route('custom-order.my')}}" class="card text-bg-secondary text-white w-100 card-hover">
+                <a href="{{route('home')}}" class="card text-bg-secondary text-white w-100 card-hover">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <i class="ti ti-checklist display-6"></i>

@@ -1,21 +1,7 @@
-.al-primary{
-  color: #926e38 !important;
+.btn.btn-primary{
+  border-width: 0px !important;
 }
 
-.btn-al-primary{
-  background-color: #926e38 !important;
-  border-color: #926e38 !important;
-  color: #fff;
-}
-.btn-al-primary:hover{
-  background-color: #926e38 !important;
-  border: #926e38 !important;
-  color: #fff;
-}
-
-.border-al-primary{
-  border-color: #926e38 !important;
-}
 .line-clamp.line-clamp-2{
   display: -webkit-box;
   -webkit-box-orient: vertical;

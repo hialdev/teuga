@@ -31,7 +31,7 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 10080),
 
     'expire_on_close' => false,
 
@@ -59,7 +59,7 @@ return [
     |
     */
 
-    'files' => storage_path('framework/sessions'),
+    'files' => env('SESSION_PATH', storage_path('framework/sessions')),
 
     /*
     |--------------------------------------------------------------------------

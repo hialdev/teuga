@@ -1,16 +1,19 @@
 @extends('layouts.base')
+@section('css')
+<link rel="stylesheet" href="{{env('APP_URL')}}/assets/libs/select2/dist/css/select2.min.css">
+@endsection
 @section('content')
     <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
                 <div class="col-9">
-                    <h4 class="fw-semibold mb-8">Edit Produk {{$product->nama}}</h4>
+                    <h4 class="fw-semibold mb-8">Edit Produk</h4>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a class="text-muted text-decoration-none" href="{{ route('product.index') }}">Product</a>
+                                <a class="text-muted text-decoration-none" href="{{ route('product.index') }}">Produk</a>
                             </li>
-                            <li class="breadcrumb-item" aria-current="page">Edit {{$product->nama}}</li>
+                            <li class="breadcrumb-item" aria-current="page">Edit</li>
                         </ol>
                     </nav>
                 </div>
@@ -25,9 +28,19 @@
 
     <div class="row">
         <div class="col-md-4 h-100 mb-3">
-            <img src="/storage/{{$product->image}}" id="placeholder-image" alt="Produk Image Data" class="rounded-4 shadow w-100"
+            @if($product->image)
+            <img src="{{ '/storage/'.$product->image }}" alt="Product Image Preview" class="rounded-4 shadow w-100"
                 style="">
-            <img src="" id="preview-image" alt="Produk Image Preview" class="d-none rounded-4 shadow w-100"
+            @else
+            <div id="placeholder-image"
+                class="d-flex p-5 text-center align-items-center justify-content-center rounded-5 border-2 border-dashed"
+                style="aspect-ratio:1/1">
+                <div>
+                    <div class="fs-4">If Image Selected, it will show (Preview)</div>
+                </div>
+            </div>
+            @endif
+            <img src="" id="preview-image" alt="Product Image Preview" class="d-none rounded-4 shadow w-100"
                 style="">
         </div>
         <div class="col-md-8">
@@ -65,7 +78,7 @@
                             <div class="input-group">
                                 <span class="input-group-text px-6" id="basic-addon1"><i
                                         class="ti ti-text-caption fs-6"></i></span>
-                                <input type="text" name="name" value="{{old('name', $product->nama)}}" class="form-control ps-2" placeholder="Name Produk">
+                                <input type="text" name="name" value="{{old('name', $product->name)}}" class="form-control ps-2" placeholder="Name Product">
                             </div>
                             @error('name')
                                 <span class="invalid-feedback" role="alert">
@@ -78,7 +91,7 @@
                             <div class="input-group">
                                 <span class="input-group-text px-6" id="basic-addon1"><i
                                         class="ti ti-text-caption fs-6"></i></span>
-                                <input type="text" name="slug" value="{{old('slug', $product->slug)}}" class="form-control ps-2" placeholder="Slug Produk">
+                                <input type="text" name="slug" value="{{old('slug', $product->slug)}}" class="form-control ps-2" placeholder="Slug Product" disabled>
                             </div>
                             @error('slug')
                                 <span class="invalid-feedback" role="alert">
@@ -92,7 +105,7 @@
                                 <span class="input-group-text px-6" id="basic-addon1"><i
                                         class="ti ti-align-justified fs-6"></i></span>
                                 <textarea class="form-control ps-2" name="description" id="description" cols="20" rows="5"
-                                    placeholder="Keterangan Produk">{{old('description', $product->keterangan)}}</textarea>
+                                    placeholder="Description about this Product">{{old('description', $product->description)}}</textarea>
                             </div>
                             @error('description')
                                 <span class="invalid-feedback" role="alert">
@@ -100,46 +113,57 @@
                                 </span>
                             @enderror
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Harga</label>
-                            <div class="input-group">
+                        <div class="p-3 rounded-3 bg-primary-subtle mb-2">
+                            <label for="unit_id" class="form-label">Satuan</label>
+                            <div class="input-group mb-2">
                                 <span class="input-group-text px-6" id="basic-addon1"><i
-                                        class="ti ti-users fs-6"></i></span>
-                                <input type="text" name="price" value="{{old('price', formatRupiah($product->harga))}}" class="form-control ps-2">
+                                        class="ti ti-package fs-6"></i></span>
+                                <div style="flex-grow:1">
+                                    <select name="unit_id" id="unit" class="select2-normal form-select">
+                                        <option value="">-- Pilih Satuan --</option>
+                                        @foreach ($units as $unit)
+                                            <option value="{{$unit->id}}" {{ $unit->id == old('unit_id', $product->unit_id) ? 'selected' : '' }}>
+                                                {{ $unit->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                            @error('price')
-                                <span class="invalid-feedback" role="alert">
-                                    {{ $message }}
-                                </span>
-                            @enderror
-                        </div>
-                        <div class="mb-4">
-                            <label for="category" class="form-label">Kategori</label>
-                            <select name="category" id="category" class="form-select">
-                                <option value="">Pilih Kategori</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{$category->id}}" {{$category->id == old('category', $product->produk_kategori_id) ? 'selected' : ''}}>{{$category->nama}}</option>
-                                @endforeach
-                            </select>
-                            <div class="d-flex align-items-center gap-2 mt-2">
-                                Tidak menemukan Kategori ? 
+                            <div class="d-flex align-items-center gap-2">
+                                Tidak menemukan Satuan ? 
                                 <button type="button" class="btn btn-sm text-primary bg-primary-subtle"
                                     data-bs-toggle="modal"
-                                    data-bs-target="#addProductCategoryModal"
-                                >Tambah Kategori</button>
+                                    data-bs-target="#addSatuanModal"
+                                >Tambah Satuan</button>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">
-                            Update Produk
+                            Perbarui Produk
                         </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    @include('products.addmodal', ['id' => 'addProductCategoryModal'])
+    @include('units.addmodal', ['id' => 'addSatuanModal'])
 @endsection
 @section('scripts')
+    <script src="{{env('APP_URL')}}/assets/libs/select2/dist/js/select2.full.min.js"></script>
+    <script src="{{env('APP_URL')}}/assets/libs/select2/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').each(function () {
+                let modal = $(this).closest('.modal'); // Cari modal terdekat
+                $(this).select2({
+                    dropdownParent: modal // Pasang dropdown di dalam modal
+                });
+            });
+            $('.select2-normal').each(function () {
+                let modal = $(this).closest('.modal'); // Cari modal terdekat
+                $(this).select2();
+            });
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.querySelector('input[type="file"][name="image"]');

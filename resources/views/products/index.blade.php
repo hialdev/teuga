@@ -31,6 +31,7 @@
             class="bg-primary text-white d-flex align-items-center justify-content-center rounded-5 me-auto">
             {{ count($products) }}</div>
         <a href="{{ route('product.add') }}" class="btn btn-primary btn-al-primary">Tambah</a>
+        {{-- <a href="{{route('pdf.preview.blade', ['bladePath' => 'products.stok'])}}" target="_blank" class="btn btn-danger"><i class="ti ti-file-download me-2"></i>Laporan Stok</a> --}}
     </div>
 
     <div class="card">
@@ -44,9 +45,8 @@
                     <div class="col-md-3 mb-2">
                         <label for="field" class="form-label">Urutkan Berdasarkan</label>
                         <select name="field" id="field" class="form-select">
-                            <option value="stock" {{$filter->field == 'stock' ? 'selected' : ''}}>Stok</option>
-                            @foreach (getModelAttributes('Product', ['produk_kategori_id', 'image', 'slug']) as $atr)
-                            <option value="name" {{$filter->field == $atr ? 'selected' : ''}}>{{toPascalCase($atr)}}</option>
+                            @foreach (getModelAttributes('Product', ['pack_id', 'image', 'slug', 'unit_id']) as $atr)
+                            <option value="{{$atr}}" {{$filter->field == $atr ? 'selected' : ''}}>{{toPascalCase($atr)}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -77,13 +77,10 @@
                                 <h6 class="fs-3 fw-semibold mb-0">Produk</h6>
                             </th>
                             <th>
-                                <h6 class="fs-3 fw-semibold mb-0">Kategori</h6>
+                                <h6 class="fs-3 fw-semibold mb-0">Deskripsi</h6>
                             </th>
                             <th>
-                                <h6 class="fs-3 fw-semibold mb-0">Stok</h6>
-                            </th>
-                            <th>
-                                <h6 class="fs-3 fw-semibold mb-0">Price</h6>
+                                <h6 class="fs-3 fw-semibold mb-0">Satuan</h6>
                             </th>
                             <th>
                                 <h6 class="fs-3 fw-semibold mb-0">Timestamp</h6>
@@ -95,26 +92,20 @@
                         @forelse ($products as $product)
                             <tr>
                                 <td>
-                                    <div class="d-flex align-items-center" style="width:20em">
-                                        <img src="{{ $product->image ? asset('storage/' . $product->image) : '/assets/images/profile/user-1.jpg' }}"
-                                            class="rounded-2" alt="product Image {{ $product->nama }}" style="width: 4em" />
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ $product->image ? asset('/storage/'.$product->image) : '/assets/images/profile/user-1.jpg' }}"
+                                            class="rounded-2" alt="product Image {{ $product->name }}" style="width: 4em" />
                                         <div class="ms-3">
-                                            <h6 class="fw-semibold mb-1">{{ $product->nama }}</h6>
-                                            <span class="fw-normal line-clamp line-clamp-2"
-                                                style="white-space:normal; font-size:13px; ">{{ $product->keterangan }}</span>
+                                            <h6 class="fw-semibold mb-1" style="white-space: normal !important">{{ $product->name }}</h6>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="badge bg-primary rounded-3 fw-semibold fs-2">
-                                        {{ $product?->category?->nama }}</div>
+                                    <div class="fw-normal" style="white-space:normal; font-size:13px; ">{{ $product->description ?? 'Tidak ada deskripsi'}}</div>    
                                 </td>
                                 <td>
-                                    <div class="badge bg-success rounded-3 fw-semibold fs-2">
-                                        {{ $product?->stock?->stok ?? 'undefined' }}</div>
-                                </td>
-                                <td>
-                                    <div class="">{{formatRupiah($product->harga)}}</div>
+                                    <div class="badge bg-secondary rounded-3 fw-semibold fs-2">
+                                        {{ $product->unit->name.' ('.$product->unit->code.')' }}</div>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column align-items-start gap-2">
@@ -138,11 +129,6 @@
                                                         class="fs-4 ti ti-eye"></i>View</a>
                                             </li>
                                             <li>
-                                                <button type="button" class="dropdown-item d-flex align-items-center gap-3"
-                                                    data-bs-toggle="modal" data-bs-target="#stockModal-{{$product->id}}"><i
-                                                        class="fs-4 ti ti-shopping-cart-plus"></i>Sesuaikan Stock</button>
-                                            </li>
-                                            <li>
                                                 <a href="{{route('product.edit', $product->id)}}" class="dropdown-item d-flex align-items-center gap-3"><i
                                                         class="fs-4 ti ti-edit"></i>Edit</a>
                                             </li>
@@ -154,40 +140,6 @@
                                         </ul>
                                     </div>
 
-                                    <!-- Stock Edit Modal -->
-                                    <div class="modal fade" id="stockModal-{{$product->id}}" tabindex="-1"
-                                        aria-labelledby="vertical-center-modal" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                            <div class="modal-content">
-                                                <div class="modal-header d-flex align-items-center">
-                                                    <h4 class="modal-title" id="myLargeModalLabel">
-                                                        Perbarui Kuantitas Stock
-                                                    </h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="{{ route('product.stock', $product->stock?->id ?? 'aldev') }}" method="POST">
-                                                        @csrf
-                                                        <label for="stock" class="form-label">Sesuaikan Stock</label>
-                                                        <input type="hidden" name="product_id" value="{{$product->id}}">
-                                                        <input type="number" name="stock" class="form-control mb-2"
-                                                            value="{{ old('stock', $product->stock?->stok ?? 0) }}"
-                                                            placeholder="Stock terkini : {{ $product->stock?->stok ?? 0 }}">
-                                                        <div class="d-flex gap-1 align-items-center justify-content-end">
-                                                            <button type="button"
-                                                                class="btn bg-danger-subtle text-danger  waves-effect text-start"
-                                                                data-bs-dismiss="modal">
-                                                                Close
-                                                            </button>
-                                                            <button type="submit"
-                                                                class="btn btn-primary btn-al-primary">Perbarui</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <!-- Delete Modal -->
                                     <div id="deleteModal-{{$product->id}}" class="modal fade" tabindex="-1"

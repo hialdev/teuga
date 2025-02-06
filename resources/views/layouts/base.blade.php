@@ -13,7 +13,7 @@
     <title>{{ config('app.name', 'Tanur Muthmainnah') }}</title>
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="/storage/{{setting('site.logo')}}" />
+    <link rel="shortcut icon" type="image/png" href="{{filePath(setting('site.logo'))}}" />
 
     <!-- Owl Carousel  -->
     <link rel="stylesheet" href="/assets/libs/owl.carousel/dist/assets/owl.carousel.min.css" />
@@ -29,7 +29,7 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="/storage/{{setting('site.logo')}}" alt="loader" class="lds-ripple img-fluid" />
+        <img src="{{filePath(setting('site.logo'))}}" alt="loader" class="lds-ripple img-fluid" />
     </div>
     <div id="main-wrapper">
         @include('partials.sidebar')
@@ -217,7 +217,7 @@
     </div>
 
     {{-- Alerting Session --}}
-    @if (session('success'))
+    @if (session('success') || session('status'))
         <div class="modal fade" id="al-success-alert" tabindex="-1" aria-labelledby="vertical-center-modal"
             aria-hidden="true">
             <div class="modal-dialog modal-sm">
@@ -226,7 +226,7 @@
                         <div class="text-center text-success">
                             <i class="ti ti-circle-check fs-7"></i>
                             <h4 class="mt-2">Well Done!</h4>
-                            <p class="mt-3 text-success-50">{{ session('success') }}</p>
+                            <p class="mt-3 text-success-50">{{ session('status') ?? session('success') }}</p>
                             <button type="button" class="btn btn-light my-2"
                                 data-bs-dismiss="modal">Continue</button>
                         </div>
@@ -251,7 +251,13 @@
                         <div class="text-center text-danger">
                             <i class="ti ti-hexagon-letter-x fs-7"></i>
                             <h4 class="mt-2">Oh snap!</h4>
-                            <p class="mt-3">{{ session('error') ?? $errors }}</p>
+                            <p class="mt-3">{{ session('error') }} 
+                              @if ($errors->all())
+                                  @foreach ($errors->all() as $error)
+                                      {{ $error }} {{ $loop->index != count($errors) - 1 ? ',' : ''}}
+                                  @endforeach
+                              @endif
+                            </p>
                             <button type="button" class="btn btn-light my-2"
                                 data-bs-dismiss="modal">Continue</button>
                         </div>
@@ -267,7 +273,9 @@
         </script>
     @endif
 
+    <script src="/js/ajax.js"></script>
     <script src="/assets/js/vendor.min.js"></script>
+    
     <!-- Import Js Files -->
     <script src="/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/assets/libs/simplebar/dist/simplebar.min.js"></script>
@@ -310,6 +318,13 @@
     $('.input-rupiah').on('input', function(){
         $(this).val(formatRupiah($(this).val()));    
     })
+
+    function seePDF(bladePath, id){
+        let url = "{{ route('pdf.preview') }}";
+        let token = "{{ csrf_token() }}";
+
+        previewPDF(url, token, bladePath, id);
+    }
     </script>
     @yield('scripts')
 </body>

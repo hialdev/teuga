@@ -14,8 +14,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('banks', function (Blueprint $table) {
+        Schema::connection('osano')->create('banks', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(Str::uuid());
+            $table->uuid('account_id')->nullable();
+
             $table->string('nama_bank');
             $table->text('logo')->nullable();
             $table->bigInteger('no_rekening');
@@ -32,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('banks');
+        Schema::connection('osano')->dropIfExists('banks');
     }
 };
