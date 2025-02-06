@@ -17,7 +17,7 @@ class ApplicationSeeder extends Seeder
         $applications = [
             [
                 'code' => 'SSO',
-                'name' => 'Single Sign On',
+                'name' => 'SSO',
                 'url' => 'http://sso.teuga.test',
             ],
             [
