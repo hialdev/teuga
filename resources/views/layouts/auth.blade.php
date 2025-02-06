@@ -13,7 +13,7 @@
     <title>{{ config('app.name', 'Tanur Muthmainnah') }}</title>
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="/storage/{{ setting('site.logo') }}" />
+    <link rel="shortcut icon" type="image/png" href="{{ filePath(setting('site.logo')) }}" />
     <!-- Core Css -->
     <link rel="stylesheet" href="/assets/css/styles.css" />
     <link rel="stylesheet" href="/css/app.css" />
@@ -48,7 +48,7 @@
     </div>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="/storage/{{ setting('site.logo') }}" alt="loader" class="lds-ripple img-fluid" />
+        <img src="{{ filePath(setting('site.logo')) }}" alt="loader" class="lds-ripple img-fluid" />
     </div>
     <div id="main-wrapper">
         @yield('content')
