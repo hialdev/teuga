@@ -52,7 +52,7 @@
             ];
         @endphp
         {{-- {{(string) $classArrays[$loop->index]}} --}}
-            @forelse (auth()->user()->applications as $app)
+            @forelse (auth()->user()->applications() as $app)
             <div class="item">
                 <a href="{{urlApp($app->code)}}" class="card zoom-in {{$app->url == url()->current() ? 'bg-danger-subtle shadow-md' : 'bg-primary-subtle text-primary shadow-none'}}" target="_blank" style="aspect-ratio:1/1 !important">
                     <div class="card-body">
