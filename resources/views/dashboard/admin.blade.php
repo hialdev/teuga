@@ -53,26 +53,26 @@
         @endphp
         {{-- {{(string) $classArrays[$loop->index]}} --}}
             @forelse (auth()->user()->applications() as $app)
-            @if($app && $app->code)
-                <div class="item">
-                    <a href="{{urlApp($app->code)}}" class="card zoom-in {{$app->url == url()->current() ? 'bg-danger-subtle shadow-md' : 'bg-primary-subtle text-primary shadow-none'}}" target="_blank" style="aspect-ratio:1/1 !important">
-                        <div class="card-body">
-                            <div class="text-center">
-                                @if ($app->icon)
-                                    <i class="ti ti-{{$app->icon}} fs-12"></i>
-                                @else
-                                    <img src="{{$app->image ? filePath($app->image) : filePath(setting('site.logo'))}}" width="50" height="50" class="mb-3 object-fit-contain"
-                                    alt="" />
-                                @endif
-                                <p class="fw-semibold fs-5 mt-4 mb-1">
-                                    {{$app->name}}
-                                </p>
-                                <div class="fw-semibold fs-2 line-clamp line-clamp-2 text-muted mb-0">{{$app->url}}</div>
+                @if($app && $app->code)
+                    <div class="item">
+                        <a href="{{urlApp($app?->code)}}" class="card zoom-in {{$app->url == url()->current() ? 'bg-danger-subtle shadow-md' : 'bg-primary-subtle text-primary shadow-none'}}" target="_blank" style="aspect-ratio:1/1 !important">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    @if ($app?->icon)
+                                        <i class="ti ti-{{$app?->icon}} fs-12"></i>
+                                    @else
+                                        <img src="{{$app?->image ? filePath($app->image) : filePath(setting('site.logo'))}}" width="50" height="50" class="mb-3 object-fit-contain"
+                                        alt="" />
+                                    @endif
+                                    <p class="fw-semibold fs-5 mt-4 mb-1">
+                                        {{$app?->name}}
+                                    </p>
+                                    <div class="fw-semibold fs-2 line-clamp line-clamp-2 text-muted mb-0">{{$app-?>url}}</div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
-            @endif
+                        </a>
+                    </div>
+                @endif
             @empty
             <div class="p-5 rounded-4 border border-dashed text-center">Tidak ada akses aplikasi</div>
             @endforelse

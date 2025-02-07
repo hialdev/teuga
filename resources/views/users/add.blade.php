@@ -121,7 +121,7 @@
                                         <span class="input-group-text px-6" id="basic-addon1"><i
                                                 class="ti ti-phone fs-6"></i></span>
                                         <input type="number" name="phone" class="form-control ps-2"
-                                            placeholder="62xxx" value="{{old('phone', $user->phone)}}">
+                                            placeholder="62xxx" value="{{old('phone')}}">
                                     </div>
                                     @error('phone')
                                         <span class="invalid-feedback" role="alert">

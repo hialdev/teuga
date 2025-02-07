@@ -17,17 +17,17 @@ class ApplicationSeeder extends Seeder
         $applications = [
             [
                 'code' => 'SSO',
-                'name' => 'SSO',
+                'name' => 'sso',
                 'url' => 'http://sso.teuga.test',
             ],
             [
                 'code' => 'ACC',
-                'name' => 'Account',
+                'name' => 'account',
                 'url' => 'http://acc.teuga.test',
             ],
             [
                 'code' => 'OSN',
-                'name' => 'OSANO',
+                'name' => 'osano',
                 'url' => 'http://osn.teuga.test',
             ],
         ];
