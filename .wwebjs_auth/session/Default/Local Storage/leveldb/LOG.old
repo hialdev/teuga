@@ -1,6 +1,0 @@
-2025/01/22-00:59:53.251 431c Reusing MANIFEST C:\laragon\www\teuga\waweb\.wwebjs_auth\session\Default\Local Storage\leveldb/MANIFEST-000001
-2025/01/22-00:59:53.252 431c Recovering log #3
-2025/01/22-00:59:53.252 431c Reusing old log C:\laragon\www\teuga\waweb\.wwebjs_auth\session\Default\Local Storage\leveldb/000003.log 
-2025/01/22-01:10:04.563 12dc Level-0 table #5: started
-2025/01/22-01:10:04.572 12dc Level-0 table #5: 18548 bytes OK
-2025/01/22-01:10:04.580 12dc Delete type=0 #3
