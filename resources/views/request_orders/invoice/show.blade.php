@@ -347,7 +347,7 @@
     <div class="row">
         <div class="col-12">
             <div class="mb-3 d-flex align-items-center gap-2 justify-content-between">
-                <h4>Pembayaran (Hutang)</h4>
+                <h4>Pembayaran (Piutang)</h4>
                 <div style="aspect-ratio:1/1; width:3em; height:3em"
                     class="bg-primary text-white d-flex align-items-center justify-content-center rounded-5 me-auto">
                     {{ count($roInvoice->payments) }}</div>
@@ -395,7 +395,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row position-relative">
-                            <div class="col-md-6 d-flex align-items-center flex-wrap gap-4">
+                            <div class="col-md-6 d-flex align-items-center flex-wrap gap-2 gap-md-3">
                                 <h5 class="mb-0">{{ $pay->code }}</h5>
                                 <a href="{{ $pay->file ? '/storage/' . $pay->file : '#' }}"
                                     target="_blank"
@@ -406,13 +406,13 @@
                             </div>
                             <div class="col-md-6">
                                 <div class=" d-flex align-items-center gap-2">
-                                    <div class="ms-auto text-end">
+                                    <div class="ms-md-auto text-md-end mt-3 mt-md-0">
                                         <div class="fs-2 text-muted">Total Pembayaran</div>
                                         <div class="fs-5 mb-0 fw-bold text-primary">{{ formatRupiah($pay->paid_total) }}</div>
                                         <div class="fs-2 text-{{$roInvoice->remaining_payment != 0 ? 'danger' : 'success'}}">dari sisa
                                             {{ formatRupiah($roInvoice->remaining_payment) }}</div>
                                     </div>
-                                    <div class="dropdown dropstart">
+                                    <div class="dropdown dropstart ms-auto ms-md-0">
                                         <a href="#" class="text-muted" id="dropdownMenuButton" data-bs-toggle="dropdown"
                                             aria-expanded="false">
                                             <i class="ti ti-dots fs-5"></i>

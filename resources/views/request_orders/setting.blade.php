@@ -93,22 +93,22 @@
                     '2' => ['label' => 'Selesai','color' => 'success'],
                 ];    
                 @endphp
-                <a href="{{ route('purchase-order.add', ['reqid' => $reqorder->id]) }}" class="btn btn-primary {{$reqorder->status == '2' ? 'd-none' : ''}}"><i class="ti ti-building-factory me-1"></i> Proses</a>
+                <a href="{{ route('purchase-order.add', ['reqid' => $reqorder->id]) }}" class="btn btn-primary {{$reqorder->status == '2' ? 'd-none' : ''}}"><i class="ti ti-building-factory me-1"></i> <span class="d-none d-sm-block">Proses</span></a>
                 <div>
                     <div class="fw-normal fs-1 text-muted" style="">Status</div>
                     <h6 class="fw-semibold fs-2 text-{{ $status[$reqorder->status]['color'] }} mb-1" style="">{{ $status[$reqorder->status]['label'] }}</h6>
                 </div>
             </div>
             <div class="col-md-6 order-first order-md-0 d-flex align-items-start gap-2 flex-wrap">
-                <div class="stepper flex-grow-1">
+                <div class="stepper flex-grow-1 overflow-auto">
                     <div class="step active" data-step="1">
                         <div class="circle">1</div>
-                        <div class="label fs-2">Data Permintaan Client</div>
+                        <div class="label fs-2">Data <span class="d-none d-sm-block">Permintaan Client</span></div>
                         <div class="line"></div>
                     </div>
                     <div class="step" data-step="2">
                         <div class="circle">2</div>
-                        <div class="label fs-2">Produk dipesan</div>
+                        <div class="label fs-2">Produk <span class="d-none d-sm-block">dipesan</span></div>
                         <div class="line"></div>
                     </div>
                     <div class="step" data-step="3">
@@ -118,12 +118,12 @@
                     </div>
                     <div class="step" data-step="4">
                         <div class="circle">4</div>
-                        <div class="label fs-2">Proses Permintaan</div>
+                        <div class="label fs-2">Proses <span class="d-none d-sm-block">Permintaan</span></div>
                         <div class="line"></div>
                     </div>
                     <div class="step" data-step="5">
                         <div class="circle">5</div>
-                        <div class="label fs-2">Penagihan / Invoices</div>
+                        <div class="label fs-2"><span class="d-none d-sm-block">Penagihan / </span>Invoice</div>
                     </div>
                 </div>
             </div>
@@ -832,7 +832,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="btn-accordion p-3 border border-2 rounded-3 border-dashed">
-                                    <div class="d-flex align-items-center gap-3 justify-content-between" style="cursor: pointer">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-between" style="cursor: pointer">
                                         <div>
                                             <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Pembelian
                                             </div>

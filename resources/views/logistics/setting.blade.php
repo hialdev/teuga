@@ -104,7 +104,7 @@
             <div class="step-content active" data-step="1">
                 <div class="card" id="view-principal">
                     <div class="px-4 py-3 border-bottom w-100">
-                        <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2 justify-content-between">
                             <h5 class="card-title fw-semibold mb-3">Data Logistic</h5>
                             <div class="ms-auto d-flex align-items-center gap-2">
                                 <button type="button" class="btn-principal-edit btn btn-sm btn-secondary d-flex align-items-center gap-2"><i class="ti ti-edit"></i> Edit</button>
@@ -145,7 +145,7 @@
                                 <!-- /.modal-dialog -->
                             </div>
                         </div>
-                        <div class="d-flex align-items-center mb-3 w-100" style="width:15em">
+                        <div class="d-flex flex-wrap align-items-center mb-3 w-100" style="width:15em">
                             <img src="{{ $logistic->image ? asset('/storage/'.$logistic->image) : '/assets/images/profile/user-1.jpg' }}"
                                 class="rounded-2" alt="principal Image {{ $logistic->name }}" style="width: 4em" />
                             <div class="ms-3 flex-grow-1">

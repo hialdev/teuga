@@ -9,24 +9,28 @@
                 <div class="row">
                     <div class="col-sm-7">
                         <div class="d-flex align-items-center mb-7">
-                            <div class="rounded-circle overflow-hidden me-6">
-                                <img src="{{ auth()->user()->image ? filePath(auth()->user()->image) : '/assets/images/profile/user-1.jpg'}}" alt="" width="40"
-                                    height="40" class="object-fit-cover">
+                            <div class="rounded-circle overflow-hidden me-6" style="aspect-ratio:1/1 !important; object-position:center; object-fit:cover;">
+                                <img src="{{ auth()->user()->image ? filePath(auth()->user()->image) : '/assets/images/profile/user-1.jpg'}}" alt="" width="70"
+                                    height="70" class="object-fit-cover d-block" style="aspect-ratio:1/1 !important;">
                             </div>
                             <h5 class="fw-semibold mb-0 fs-5">Selamat Datang {{auth()->user()->name}}!</h5>
                         </div>
-                        <div class="d-flex align-items-center">
-                            <div class="border-end pe-4 border-muted border-opacity-10">
-                                <h3 class="mb-1 fw-semibold fs-8 d-flex align-content-center">
-                                    {{formatRupiah(\App\Models\RequestOrder::all()->sum('total_price_taxed'))}}
-                                </h3>
-                                <p class="mb-0 text-dark">Total Permintaan Client</p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="border-end pe-4 border-muted border-opacity-10">
+                                    <h3 class="mb-1 fw-semibold fs-8 d-flex align-content-center">
+                                        {{formatRupiah(\App\Models\RequestOrder::all()->sum('total_price_taxed'))}}
+                                    </h3>
+                                    <p class="mb-0 text-dark fs-2">Total Permintaan Client</p>
+                                </div>
                             </div>
-                            <div class="ps-4">
-                                <h3 class="mb-1 fw-semibold fs-8 d-flex align-content-center">
-                                    {{formatRupiah(\App\Models\PurchaseOrder::all()->sum('total_price_taxed') + \App\Models\Transport::all()->sum('total_price_taxed'))}}
-                                </h3>
-                                <p class="mb-0 text-dark">Total Pembelian Principal + Pengangkutan</p>
+                            <div class="col-md-6 mb-3">
+                                <div class="">
+                                    <h3 class="mb-1 fw-semibold fs-8 d-flex align-content-center">
+                                        {{formatRupiah(\App\Models\PurchaseOrder::all()->sum('total_price_taxed') + \App\Models\Transport::all()->sum('total_price_taxed'))}}
+                                    </h3>
+                                    <p class="mb-0 text-dark fs-2">Total Pembelian Principal + Pengangkutan</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -46,12 +50,12 @@
             <div class="col-sm-12 col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex flex-row flex-wrap">
+                        <div class="d-flex gap-3 flex-row flex-wrap">
                             <div
                                 class="round-40 rounded-circle text-white d-flex align-items-center justify-content-center text-bg-success">
                                 <i class="ti ti-building-skyscraper fs-6"></i>
                             </div>
-                            <div class="ms-3 align-self-center">
+                            <div class="ms-sm-3 align-self-center">
                                 <h4 class="mb-0 fs-5">Pembayaran Client</h4>
                                 <span class="text-muted">Total Permintaan Client Dibayar</span>
                             </div>
@@ -71,12 +75,12 @@
             <div class="col-sm-12 col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex flex-row flex-wrap">
+                        <div class="d-flex gap-3 flex-row flex-wrap">
                             <div
                                 class="round-40 rounded-circle text-white d-flex align-items-center justify-content-center text-bg-warning">
                                 <i class="ti ti-truck-return fs-6"></i>
                             </div>
-                            <div class="ms-3 align-self-center">
+                            <div class="ms-sm-3 align-self-center">
                                 <h4 class="mb-0 fs-5">Pembayaran Logistic</h4>
                                 <span class="text-muted">Total Pembayaran Pengangkutan</span>
                             </div>
@@ -96,14 +100,14 @@
             <div class="col-sm-12 col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex flex-row flex-wrap">
+                        <div class="d-flex gap-3 flex-row flex-wrap">
                             <div
-                                class="round-40 rounded-circle text-white d-flex align-items-center justify-content-center text-bg-info">
+                                class="round-40 rounded-circle me-2 me-sm-0 text-white d-flex align-items-center justify-content-center text-bg-info">
                                 <i class="ti ti-building-factory fs-6"></i>
                             </div>
-                            <div class="ms-3 align-self-center">
+                            <div class="ms-sm-3 align-self-center">
                                 <h4 class="mb-0 fs-5">Pembayaran Principal</h4>
-                                <span class="text-muted">Total Pembelian ke Principal</span>
+                                <span class="text-muted">Total Pembayaran ke Principal</span>
                             </div>
                             <div class="align-self-center mt-3 text-start border-top pt-3 w-100">
                                 <h2 class="fs-7 fw-bold mb-0" style="white-space: nowrap">

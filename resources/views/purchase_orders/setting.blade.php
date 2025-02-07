@@ -96,7 +96,7 @@
                 @if($purchase->status != 2)
                 <button type="button" class="btn p-2 px-3 d-flex {{$purchase->status == 0 ? 'btn-warning' : 'btn-success'}} align-items-center gap-2"
                             data-bs-toggle="modal" data-bs-target="#processModal-{{$purchase->id}}"><i
-                                class="fs-4 ti {{$purchase->status == 0 ? 'ti-loader-3' : 'ti-check'}}"></i>{{$purchase->status == 0 ? 'Proses' : 'Selesaikan'}}</button>
+                                class="fs-4 ti {{$purchase->status == 0 ? 'ti-loader-3' : 'ti-check'}}"></i><span class="d-none d-sm-block">{{$purchase->status == 0 ? 'Proses' : 'Selesaikan'}}</span></button>
                 <!-- Process Modal -->
                 <div class="modal fade" id="processModal-{{$purchase->id}}" tabindex="-1"
                     aria-labelledby="vertical-center-modal" aria-hidden="true">
@@ -137,7 +137,7 @@
                 </div>
             </div>
             <div class="col-md-6 order-first order-md-0 d-flex align-items-start gap-2 flex-wrap">
-                <div class="stepper flex-grow-1">
+                <div class="stepper flex-grow-1 overflow-auto">
                     <div class="step active" data-step="1">
                         <div class="circle">1</div>
                         <div class="label fs-2">Data Pembelian</div>
@@ -161,7 +161,7 @@
             </div>
             <div class="col-6 col-md-3 mb-4 d-flex justify-content-end align-items-start gap-2">
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRequestOrder-{{$purchase->id}}"><i class="ti ti-trash"></i> <span class="ms-1 d-none d-md-inline-block">Hapus</span></button>
-                <button onclick="seePDF('pdf.po','{{$purchase->id}}')" class="btn btn-danger" style="background:rgb(186, 55, 55); border-color:rgb(186, 55, 55)"><i class="ti ti-printer me-2"></i>Cetak PO</button>
+                <button onclick="seePDF('pdf.po','{{$purchase->id}}')" class="btn btn-danger" style="background:rgb(186, 55, 55); border-color:rgb(186, 55, 55)"><i class="ti ti-printer me-2"></i><span class="d-none d-sm-inline-block">Cetak</span> PO</button>
             </div>
 
             <!-- Delete Modal -->
@@ -675,7 +675,7 @@
                             @include('partials.paginate',['datas' => $products])
                         </div>
                     </div>
-                    <div class="col-md-7 mb-3 order-first">
+                    <div class="col-lg-7 mb-3 order-first">
                         <div class="d-flex mb-3 align-items-center gap-3">
                             <i class="ti ti-package fs-8"></i>
                             <h5 class="mb-0">Produk yang diproses</h5>
@@ -719,8 +719,8 @@
                                                     {{ formatRupiah($subtotal) }}</div>
                                             </div>
                                         </div>
-                                        <div class="d-flex align-items-end gap-2">
-                                            <div>
+                                        <div class="d-flex align-items-end flex-wrap flex-sm-nowrap gap-2">
+                                            <div class="flex-grow-1">
                                                 <label for="qty" class="form-label mb-0 fs-2">Proses Sebanyak
                                                     ({{ $cart->unit->code }})</label>
                                                 @if($purchase->requestOrder)
@@ -752,28 +752,30 @@
                                                     data-id="{{ $item['id'] }}" value="{{ formatRupiah($priceBuy) }}"
                                                     min="0" {{$purchase->status != 0 ? 'disabled' : ''}} />
                                             </div>
-                                            <div class="flex-grow-1">
-                                                <label class="form-label fw-semibold fs-2">Kemas Dengan</label>
-                                                <div style="">
-                                                    <select name="pack_id[]" id="pack_id-{{$item['id']}}" class="select2-normal form-select-sm form-select" {{$purchase->status != 0 ? 'disabled' : ''}}>
-                                                        <option value="">-- Pilih Kemasan --</option>
-                                                        @foreach (\App\Models\Pack::where('unit_id', $cart->unit_id)->get() as $pack)
-                                                            <option value="{{$pack->id}}" {{$pack->id == old('pack_id', isset($item['pack_id']) ? $item['pack_id'] : '') ? 'selected' : ''}}>{{$pack->name.' @ '.$pack->capacity.' '.$pack->unit->code}}</option>
-                                                        @endforeach
-                                                    </select>
+                                            <div class="flex-grow-1 d-flex align-items-end gap-2">
+                                                <div class="flex-grow-1">
+                                                    <label class="form-label fw-semibold fs-2">Kemas Dengan</label>
+                                                    <div style="">
+                                                        <select name="pack_id[]" id="pack_id-{{$item['id']}}" class="select2-normal form-select-sm form-select" {{$purchase->status != 0 ? 'disabled' : ''}}>
+                                                            <option value="">-- Pilih Kemasan --</option>
+                                                            @foreach (\App\Models\Pack::where('unit_id', $cart->unit_id)->get() as $pack)
+                                                                <option value="{{$pack->id}}" {{$pack->id == old('pack_id', isset($item['pack_id']) ? $item['pack_id'] : '') ? 'selected' : ''}}>{{$pack->name.' @ '.$pack->capacity.' '.$pack->unit->code}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    @error('pack_id')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            {{ $message }}
+                                                        </span>
+                                                    @enderror
                                                 </div>
-                                                @error('pack_id')
-                                                    <span class="invalid-feedback" role="alert">
-                                                        {{ $message }}
-                                                    </span>
-                                                @enderror
+                                                <button class="btn btn-sm btn-danger remove-cart"
+                                                    data-url="{{ route('purchase-order.removeCart', $purchase->id) }}"
+                                                    data-product-id="{{ $item['id'] }}"
+                                                    data-reqorder-id="{{ $purchase->id }}" {{$purchase->status != 0 ? 'disabled' : ''}}>
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
                                             </div>
-                                            <button class="btn btn-sm btn-danger remove-cart"
-                                                data-url="{{ route('purchase-order.removeCart', $purchase->id) }}"
-                                                data-product-id="{{ $item['id'] }}"
-                                                data-reqorder-id="{{ $purchase->id }}" {{$purchase->status != 0 ? 'disabled' : ''}}>
-                                                <i class="ti ti-trash"></i>
-                                            </button>
                                         </div>
                                     </div>
                                 @empty
@@ -803,8 +805,8 @@
                                     <div class="d-flex align-items-center gap-2 mt-2">
                                         <button type="button" id="refetchBtn" class="btn btn-secondary {{ count($carts) == 0 ? 'd-none' : ''}}"
                                             title="Muat Ulang Pemrosesan Produk"><i class="ti ti-refresh"></i></button>
-                                        <button type="submit" class="btn btn-primary w-100" {{$purchase->status != 0 ? 'disabled' : ''}}>Simpan dan Lanjut ke
-                                            Lampiran</button>
+                                        <button type="submit" class="btn btn-primary w-100" {{$purchase->status != 0 ? 'disabled' : ''}}>Simpan dan Lanjut <span class="d-none d-md-inline-block">ke
+                                            Lampiran</span></button>
                                     </div>
                                 </div>
                             </div>
@@ -954,7 +956,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="btn-accordion p-3 border border-2 rounded-3 border-dashed">
-                                <div class="d-flex align-items-center gap-3 justify-content-between flex-wrap" style="cursor: pointer">
+                                <div class="d-flex align-items-center gap-2 justify-content-between flex-wrap" style="cursor: pointer">
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
                                         </div>
@@ -971,7 +973,7 @@
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="">Status Pembayaran
                                         </div>
-                                        <h6 class="fw-semibold text-end text-sm-start fs-2 text-{{ $statusPembayaran[$purchase->invoice->payment_status]['color'] }} mb-1" style="">{{ $statusPembayaran[$purchase->invoice->payment_status]['label'] }}</h6>
+                                        <h6 class="fw-semibold text-start fs-2 text-{{ $statusPembayaran[$purchase->invoice->payment_status]['color'] }} mb-1" style="">{{ $statusPembayaran[$purchase->invoice->payment_status]['label'] }}</h6>
                                     </div>
                                     <div class="ms-md-auto text-start">
                                         <div class="fs-1 text-muted">Klik untuk melihat detail</div>
@@ -1253,7 +1255,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="">
-                                <div class="d-flex align-items-center gap-3 justify-content-between flex-wrap">
+                                <div class="d-flex align-items-center gap-2 justify-content-between flex-wrap">
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Partial Invoice Client
                                         </div>
@@ -1270,10 +1272,10 @@
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="">Status Pembayaran
                                         </div>
-                                        <h6 class="fw-semibold text-end text-sm-start fs-2 text-{{ $statusPembayaran[$purchase->clientInvoice->payment_status]['color'] }} mb-1" style="">{{ $statusPembayaran[$purchase->clientInvoice->payment_status]['label'] }}</h6>
+                                        <h6 class="fw-semibold text-start text-sm-end text-md-start fs-2 text-{{ $statusPembayaran[$purchase->clientInvoice->payment_status]['color'] }} mb-1" style="">{{ $statusPembayaran[$purchase->clientInvoice->payment_status]['label'] }}</h6>
                                     </div>
                                     <div class="d-flex align-items-center gap-2 ms-auto">
-                                        <a href="{{route('request-order.invoice.show', $purchase->clientInvoice->id)}}" target="_blank" class="btn btn-primary"><i class="ti ti-credit-card me-2"></i>Pembayaran</a>
+                                        <a href="{{route('request-order.invoice.show', $purchase->clientInvoice->id)}}" target="_blank" class="btn btn-primary"><i class="ti ti-credit-card me-0 me-sm-2"></i><span class="d-none d-md-block">Pembayaran</span></a>
                                         <button onclick="seePDF('pdf.partial','{{$purchase->clientInvoice->id}}')" class="btn btn-secondary" style="background:rgb(186, 55, 55); border-color:rgb(186, 55, 55)"><i class="ti ti-printer me-2"></i>Cetak Partial Invoice</button>
                                     </div>
                                 </div>

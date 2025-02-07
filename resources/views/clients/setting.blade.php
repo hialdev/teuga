@@ -145,7 +145,7 @@
                                 <!-- /.modal-dialog -->
                             </div>
                         </div>
-                        <div class="d-flex align-items-center mb-3 w-100" style="width:15em">
+                        <div class="d-flex flex-wrap align-items-center mb-3 w-100" style="width:15em">
                             <img src="{{ $client->image ? asset('/storage/'.$client->image) : '/assets/images/profile/user-1.jpg' }}"
                                 class="rounded-2" alt="principal Image {{ $client->name }}" style="width: 4em" />
                             <div class="ms-3 flex-grow-1">
