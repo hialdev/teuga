@@ -67,7 +67,7 @@
                                     <p class="fw-semibold fs-5 mt-4 mb-1">
                                         {{$app?->name}}
                                     </p>
-                                    <div class="fw-semibold fs-2 line-clamp line-clamp-2 text-muted mb-0">{{$app-?>url}}</div>
+                                    <div class="fw-semibold fs-2 line-clamp line-clamp-2 text-muted mb-0">{{$app?->url}}</div>
                                 </div>
                             </div>
                         </a>
