@@ -77,7 +77,7 @@ class TransportController extends Controller
             if($transport->status != '0') return redirect()->back()->withInput()->with('error', 'Gagal menghapus Pengangkutan, Error: Pembelian dan Pengangkutan telah diproses.');
             $transport->delete();
 
-            return redirect()->route('pack.index')->with('success', 'Pengangkutan '.$transport->name.' berhasil dihapus.');
+            return redirect()->back()->with('success', 'Pengangkutan '.$transport->name.' berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Gagal menghapus Pengangkutan, Error: '.$e->getMessage());
         }

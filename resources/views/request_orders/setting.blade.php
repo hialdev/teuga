@@ -93,7 +93,7 @@
                     '2' => ['label' => 'Selesai','color' => 'success'],
                 ];    
                 @endphp
-                <a href="{{ route('purchase-order.add', ['reqid' => $reqorder->id]) }}" class="btn btn-primary {{$reqorder->status == '2' ? 'd-none' : ''}}"><i class="ti ti-building-factory me-1"></i> <span class="d-none d-sm-block">Proses</span></a>
+                <a href="{{ route('purchase-order.add', ['reqid' => $reqorder->id]) }}" class="btn btn-primary {{$reqorder->status == '2' ? 'd-none' : ''}}"><i class="ti ti-building-factory me-1"></i> <span class="d-none d-sm-inline-block">Proses</span></a>
                 <div>
                     <div class="fw-normal fs-1 text-muted" style="">Status</div>
                     <h6 class="fw-semibold fs-2 text-{{ $status[$reqorder->status]['color'] }} mb-1" style="">{{ $status[$reqorder->status]['label'] }}</h6>

@@ -41,7 +41,7 @@ class CheckAppPermission
         $permissionArray = $user->roles[0]->permissions->pluck('name')->toArray();
 
         // Periksa apakah user memiliki permission sesuai APP_CODE
-        if (!in_array($application->name, $permissionArray)) {
+        if (!in_array($application->name, $permissionArray) && !in_array(strtolower($application->name), $permissionArray)) {
             abort(403, 'You do not have permission to access this application.');
         }
 

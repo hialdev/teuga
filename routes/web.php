@@ -82,13 +82,6 @@ Route::middleware(['auth', 'check.app.permission'])->group(function(){
     Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
     Route::get('/profile', function(){ return redirect()->to(urlApp('ACC','/profile')); })->name('profile.index');
 
-    Route::get('/bank',[BankController::class, 'index'])->name('bank.index');
-    Route::get('/bank/add',[BankController::class, 'add'])->name('bank.add');
-    Route::post('/bank/store',[BankController::class, 'store'])->name('bank.store');
-    Route::get('/bank/{id}/edit',[BankController::class, 'edit'])->name('bank.edit');
-    Route::post('/bank/{id}/update',[BankController::class, 'update'])->name('bank.update');
-    Route::delete('/bank/{id}/destroy',[BankController::class, 'destroy'])->name('bank.destroy');
-
     Route::get('/unit',[UnitController::class, 'index'])->name('unit.index');
     Route::post('/unit/store',[UnitController::class, 'store'])->name('unit.store');
     Route::post('/unit/{id}/update',[UnitController::class, 'update'])->name('unit.update');

@@ -162,15 +162,6 @@
                         </ul>
                     </li>
 
-                    <li class="sidebar-item {{ Route::is('bank.*') ? 'selected' : '' }}">
-                        <a href="{{ route('bank.index') }}" class="sidebar-link" aria-expanded="false">
-                            <span>
-                                <i class="ti ti-credit-card"></i>
-                            </span>
-                            <span class="hide-menu">Rekening Bank</span>
-                        </a>
-                    </li>
-
 
                     <li class="nav-small-cap mt-0">
                         <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
