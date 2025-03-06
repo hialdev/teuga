@@ -48,7 +48,7 @@ class TransportController extends Controller
 
     public function update($id, Request $request){
         $transport = Transport::find($id);
-        if($transport->status != '0') return redirect()->back()->withInput()->with('error', 'Gagal menghapus Pengangkutan, Error: Pembelian dan Pengangkutan telah diproses.');
+        if($transport->status != '0') return redirect()->back()->withInput()->with('error', 'Gagal mengubah Pengangkutan, Error: Pembelian dan Pengangkutan telah diproses.');
         
         $request->merge(['total_price' => parseRupiah($request->get('total_price'))]);
         $request->validate([

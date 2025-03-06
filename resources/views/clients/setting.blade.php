@@ -162,6 +162,9 @@
                         </div>
                         <div class="text-dark ">
                             <div class="d-flex align-items-center fs-2 mb-2 gap-2">
+                                <i class="ti ti-building-bank mb-0 fs-3"></i> {{ $client->npwp}}
+                            </div>
+                            <div class="d-flex align-items-center fs-2 mb-2 gap-2">
                                 <i class="ti ti-mail mb-0 fs-3"></i> {{ $client->email}}
                             </div>
                             <div class="d-flex align-items-center fs-2 mb-2 gap-2">

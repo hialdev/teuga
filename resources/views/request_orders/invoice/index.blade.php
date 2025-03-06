@@ -30,9 +30,6 @@
         <div style="aspect-ratio:1/1; width:3em; height:3em"
             class="bg-primary text-white d-flex align-items-center justify-content-center rounded-5 me-auto">
             {{ count($roInvoices) }}</div>
-        <button class="btn btn-primary btn-al-primary"
-            data-bs-toggle="modal" data-bs-target="#addUnitModal"
-        >Tambah</button>
     </div>
 
     <div class="card">
@@ -139,6 +136,7 @@
                                             $statusInvoice = [
                                                 '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
                                                 '1' => ['label' => 'Ditagih','color' => 'success'],
+                                                '2' => ['label' => 'Ditagih Bertahap','color' => 'success'],
                                             ];
                                         @endphp
                                         <div>
@@ -149,7 +147,7 @@
                                         <div>
                                             <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
                                             </div>
-                                            <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$roInvoice->requestOrder->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$roInvoice->requestOrder->generate_invoice]['label'] }}</h6>
+                                            <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[( $roInvoice->requestOrder->is_partial ?? $roInvoice->requestOrder->generate_invoice)]['color'] }} mb-1" style="">{{ $statusInvoice[( $roInvoice->requestOrder->is_partial ?? $roInvoice->requestOrder->generate_invoice)]['label'] }}</h6>
                                         </div>
                                     @else
                                     Tidak berdasarkan Request Order
@@ -158,7 +156,7 @@
                                 <td>
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Total Tagihan</div>
-                                        <h6 class="fs-2 fw-semibold text-secondary mb-1" style="">{{ formatRupiah($roInvoice->product_qty_price['total_price_taxed']) }}</h6>
+                                        <h6 class="fs-2 fw-semibold text-secondary mb-1" style="">{{ $roInvoice->purchase_order_id ? formatRupiah($roInvoice->product_qty_price['total_price_taxed']) : formatRupiah($roInvoice->requestOrder->total_price_taxed) }}</h6>
                                     </div>
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Dibayarkan</div>

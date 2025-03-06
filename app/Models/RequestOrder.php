@@ -48,10 +48,6 @@ class RequestOrder extends Model
         return generateCode($type, $newNumber); // Fungsi generateCode dengan nilai default
     }
 
-    public function purchaseOrders(){
-        return $this->hasMany(PurchaseOrder::class, 'request_order_id');
-    }
-
     public function products(){
         return $this->hasMany(RequestOrderProduct::class, 'request_order_id')
                     ->join('products', 'request_order_products.product_id', '=', 'products.id')
@@ -80,6 +76,11 @@ class RequestOrder extends Model
         })->toArray();
 
         return $qtyRemaining;
+    }
+
+    public function getIsPartialAttribute(){
+        $check = $this->invoices && ($this->invoices->count() > 1 || ($this->invoice && $this->invoice->purchaseOrder));
+        return $check ? 2 : null;
     }
 
     public function getProcessingAnalytics()
@@ -174,6 +175,10 @@ class RequestOrder extends Model
         return round($allTotal - self::totalProcessed());
     }
 
+    public function invoice(){
+        return $this->hasOne(RequestOrderInvoice::class, 'request_order_id');
+    }
+
     public function files(){
         return $this->hasMany(RequestOrderFile::class, 'request_order_id')->orderBy('name', 'asc');
     }
@@ -188,5 +193,9 @@ class RequestOrder extends Model
 
     public function invoices(){
         return $this->hasMany(RequestOrderInvoice::class, 'request_order_id');
+    }
+
+    public function purchaseOrders(){
+        return $this->hasMany(PurchaseOrder::class, 'request_order_id');
     }
 }

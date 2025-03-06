@@ -266,6 +266,9 @@ class PurchaseOrderController extends Controller
                 $invoiceTransport->transport_id = $purchase->transport->id;
                 $invoiceTransport->payment_status = '0';
                 $invoiceTransport->save();
+
+                $purchase->transport->generate_invoice = 1;
+                $purchase->transport->save();
             }
 
             $purchase->generate_invoice = 1;
@@ -283,8 +286,11 @@ class PurchaseOrderController extends Controller
         $purchase = PurchaseOrder::findOrFail($id);
         
         if ($purchase->status != '2' || !$purchase->invoice) 
-            return redirect()->back()->with('error', 'Gagal Generate Invoice, Status tidak valid atau Invoice Pembelian ke Principal belum dibuat!.');
-        
+            return redirect()->back()->with('error', 'Gagal Generate Invoice, Status tidak valid atau Invoice Pembelian ke Principal belum dibuat!.')->with('redirect_hash', 'invoice');
+
+        if ($purchase->requestOrder->invoice && !$purchase->requestOrder->invoice->purchaseOrder) 
+            return redirect()->back()->with('error', 'Gagal Generate Invoice Partial, Sudah ada Invoice Secara Keseluruhan!.')->with('redirect_hash', 'invoice');
+
         try {
             $invoiceClient = new RequestOrderInvoice();
             $invoiceClient->request_order_id = $purchase->requestOrder->id;

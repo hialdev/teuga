@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PrincipalAddress;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PrincipalAddressController extends Controller
 {
@@ -12,7 +13,13 @@ class PrincipalAddressController extends Controller
             'principal_id' => (string) $id,
         ]);
         $request->validate([
-            'name' => 'required|string|min:3|unique:osano.principal_addresses,name',
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.principal_addresses', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('principal_id', $request->principal_id);
+                    }),
+            ],
             'principal_id' => 'required|string|exists:osano.principals,id',
             'city' => 'required|string|exists:cities,city_name',
             'postal_code' => 'required|numeric|min:4',
@@ -38,7 +45,14 @@ class PrincipalAddressController extends Controller
             'principal_id' => (string) $id,
         ]);
         $request->validate([
-            'name' => 'required|string|min:3|unique:osano.principal_addresses,name,'.$address_id,
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.principal_addresses', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('principal_id', $request->principal_id);
+                    })
+                    ->ignore($id),
+            ],
             'principal_id' => 'required|string|exists:osano.principals,id',
             'city' => 'required|string|exists:cities,city_name',
             'postal_code' => 'required|numeric|min:4',

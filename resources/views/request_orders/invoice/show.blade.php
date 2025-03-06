@@ -71,100 +71,179 @@
                                 </div>
                                 <h6 class="fw-semibold text-primary fs-5" style="">{{ $roInvoice->code }}</h6>
                             </div>
-                            <hr>
-                            <h6 class="mb-2">Pembelian Ke Principal</h6>
-                            <div>
-                                <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
-                                <h6 class="fs-2 fw-semibold text-success mb-1" style="">
-                                    {{ \Carbon\Carbon::parse($roInvoice->purchaseOrder->date)->format('d F Y') }}</h6>
-                            </div>
-                            <div>
-                                <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Pembelian
-                                </div>
-                                <a class="d-flex align-items-center gap-2 mb-1" href="{{route('purchase-order.setting', $roInvoice->purchaseOrder->id)}}">
-                                    <h6 class="fw-semibold text-primary mb-0" style="">{{ $roInvoice->purchaseOrder->code }}</h6>
-                                    <i class="ti ti-external-link"></i>
-                                </a>
-                            </div>
-                            @php
-                                $status = [
-                                    '0' => ['label' => 'Pending','color' => 'secondary'],
-                                    '1' => ['label' => 'Diproses','color' => 'warning',],
-                                    '2' => ['label' => 'Selesai','color' => 'success'],
-                                ];
+                            @if($roInvoice->purchaseOrder)
+                                <h6 class="mb-2">Pembelian Ke Principal</h6>
+                                @php $po = $roInvoice->purchaseOrder @endphp
+                                <div class="mb-3">
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
+                                        <h6 class="fs-2 fw-semibold text-success mb-1" style="">
+                                            {{ \Carbon\Carbon::parse($po->date)->format('d F Y') }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Pembelian
+                                        </div>
+                                        <a class="d-flex align-items-center gap-2 mb-1" href="{{route('purchase-order.setting', $po->id)}}">
+                                            <h6 class="fw-semibold text-primary mb-0" style="">{{ $po->code }}</h6>
+                                            <i class="ti ti-external-link"></i>
+                                        </a>
+                                    </div>
+                                    @php
+                                        $status = [
+                                            '0' => ['label' => 'Pending','color' => 'secondary'],
+                                            '1' => ['label' => 'Diproses','color' => 'warning',],
+                                            '2' => ['label' => 'Selesai','color' => 'success'],
+                                        ];
 
-                                $statusInvoice = [
-                                    '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
-                                    '1' => ['label' => 'Ditagih','color' => 'success'],
-                                ];
-                            @endphp
-                            <div>
-                                <div class="fw-normal fs-1 text-muted" style="">Status Permintaan
+                                        $statusInvoice = [
+                                            '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
+                                            '1' => ['label' => 'Ditagih','color' => 'success'],
+                                        ];
+                                    @endphp
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="">Status Permintaan
+                                        </div>
+                                        <h6 class="fw-semibold fs-2 text-{{ $status[$po->status]['color'] }} mb-1" style="">{{ $status[$po->status]['label'] }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
+                                        </div>
+                                        <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$po->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$po->generate_invoice]['label'] }}</h6>
+                                    </div>
+                                    <div style="min-width: 10em">
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Deksripsi</div>
+                                        <p class="mb-1 fs-2" style="white-space:normal !important;">{{ $po->description ?? 'tidak ada deskripsi' }}</p>
+                                    </div>
                                 </div>
-                                <h6 class="fw-semibold fs-2 text-{{ $status[$roInvoice->purchaseOrder->status]['color'] }} mb-1" style="">{{ $status[$roInvoice->purchaseOrder->status]['label'] }}</h6>
-                            </div>
-                            <div>
-                                <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
-                                </div>
-                                <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$roInvoice->purchaseOrder->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$roInvoice->purchaseOrder->generate_invoice]['label'] }}</h6>
-                            </div>
-                            <div style="min-width: 10em">
-                                <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Deksripsi</div>
-                                <p class="mb-1 fs-2" style="white-space:normal !important;">{{ $roInvoice->purchaseOrder->description ?? 'tidak ada deskripsi' }}</p>
-                            </div>
+                            @endif
                             <hr>
                             <h6>Permintaan Client (Request Order)</h6>
                             <div>
                                 <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
                                 <h6 class="fs-2 fw-semibold text-success mb-1" style="">
-                                    {{ \Carbon\Carbon::parse($roInvoice->purchaseOrder->requestOrder->date)->format('d F Y') }}</h6>
+                                    {{ \Carbon\Carbon::parse($roInvoice->requestOrder->date)->format('d F Y') }}</h6>
                             </div>
                             <div>
                                 <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Permintaan
                                 </div>
-                                <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->purchaseOrder->requestOrder->code }}</h6>
+                                <a href="{{route('request-order.setting', $roInvoice->requestOrder->id)}}" class="mb-1 d-flex align-items-center gap-2"><h6 class="fw-semibold text-primary mb-0" style="">{{ $roInvoice->requestOrder->code }}</h6> <i class="ti ti-external-link "></i></a>
                             </div>
                             <div>
                                 <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Referensi
                                     Permintaan (PO)</div>
-                                <a href="{{ $roInvoice->purchaseOrder->requestOrder->attachment ? '/storage/'.$roInvoice->purchaseOrder->requestOrder->attachment : '#' }}" class="badge fs-2 mb-1 bg-primary-subtle text-primary border-primary">
+                                <a href="{{ $roInvoice->requestOrder->attachment ? '/storage/'.$roInvoice->requestOrder->attachment : '#' }}" class="badge fs-2 mb-1 bg-primary-subtle text-primary border-primary">
                                     <i class="ti ti-file"></i>
-                                    {{ $roInvoice->purchaseOrder->requestOrder->attachment ? $roInvoice->purchaseOrder->requestOrder->no_refrence : 'Tidak ada Lampiran'}}
+                                    {{ $roInvoice->requestOrder->attachment ? $roInvoice->requestOrder->no_refrence : 'Tidak ada Lampiran'}}
                                 </a>
                             </div>
+
+                            @if(!$roInvoice->purchaseOrder)
+                            <hr>
+                            <h6>Timestamp</h6>
+                            <div class="d-flex flex-column align-items-start gap-2">
+                                <div class="badge bg-success-subtle text-success rounded-3 fw-semibold fs-2">
+                                    Updated
+                                    at
+                                    : {{ $roInvoice->updated_at }}</div>
+                                <div class="badge bg-primary-subtle text-primary rounded-3 fw-semibold fs-2">
+                                    Created
+                                    at
+                                    : {{ $roInvoice->created_at }}</div>
+                            </div>
+                            @endif
                         </div>
+
+                        @if(!$roInvoice->purchaseOrder && $roInvoice->requestOrder->purchaseOrders && $roInvoice->requestOrder->purchaseOrders->count() > 0)
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            @foreach ($roInvoice->requestOrder->purchaseOrders as $po)
+                                <h6 class="mb-2">Pembelian Ke Principal</h6>
+                                <div class="mb-3">
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
+                                        <h6 class="fs-2 fw-semibold text-success mb-1" style="">
+                                            {{ \Carbon\Carbon::parse($po->date)->format('d F Y') }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Pembelian
+                                        </div>
+                                        <a class="d-flex align-items-center gap-2 mb-1" href="{{route('purchase-order.setting', $po->id)}}">
+                                            <h6 class="fw-semibold text-primary mb-0" style="">{{ $po->code }}</h6>
+                                            <i class="ti ti-external-link"></i>
+                                        </a>
+                                    </div>
+                                    @php
+                                        $status = [
+                                            '0' => ['label' => 'Pending','color' => 'secondary'],
+                                            '1' => ['label' => 'Diproses','color' => 'warning',],
+                                            '2' => ['label' => 'Selesai','color' => 'success'],
+                                        ];
+
+                                        $statusInvoice = [
+                                            '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
+                                            '1' => ['label' => 'Ditagih','color' => 'success'],
+                                        ];
+                                    @endphp
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="">Status Permintaan
+                                        </div>
+                                        <h6 class="fw-semibold fs-2 text-{{ $status[$po->status]['color'] }} mb-1" style="">{{ $status[$po->status]['label'] }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
+                                        </div>
+                                        <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$po->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$po->generate_invoice]['label'] }}</h6>
+                                    </div>
+                                    <div style="min-width: 10em">
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Deksripsi</div>
+                                        <p class="mb-1 fs-2" style="white-space:normal !important;">{{ $po->description ?? 'tidak ada deskripsi' }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @endif
+                        
+                        @if($roInvoice->purchaseOrder)
                         <div class="col-md-4 mb-3 mb-md-0">
                             <div class="">
                                 <h6>Memesan Ke Principal</h6>
-                                <a href="{{route('principal.setting', $roInvoice->purchaseOrder->principal->id)}}" target="_blank" class="border border-primary p-1 px-2 rounded-2 d-inline-flex align-items-center fs-2 mb-1 gap-2">
-                                    <i class="ti ti-building-skyscraper mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->principal->name }}
+                                <a href="{{ route('principal.setting', $roInvoice->purchaseOrder->principal->id) }}"
+                                    target="_blank"
+                                    class="border border-primary p-1 px-2 rounded-2 d-inline-flex align-items-center fs-2 mb-1 gap-2">
+                                    <i class="ti ti-building-skyscraper mb-0 fs-3"></i>
+                                    {{ $roInvoice->purchaseOrder->principal->name }}
                                 </a>
                                 <div class="fw-normal fs-1 text-muted" style="">PIC Principal</div>
                                 <div class="d-flex align-items-center fs-2 mb-1 gap-2">
                                     <i class="ti ti-user-circle mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->pic->name }}
                                 </div>
                                 <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                    <i class="ti ti-mail mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->pic->email ?? '-' }}
+                                    <i class="ti ti-mail mb-0 fs-3"></i>
+                                    {{ $roInvoice->purchaseOrder->pic->email ?? '-' }}
                                 </div>
                                 <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                    <i class="ti ti-phone mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->pic->phone ?? '-' }}
+                                    <i class="ti ti-phone mb-0 fs-3"></i>
+                                    {{ $roInvoice->purchaseOrder->pic->phone ?? '-' }}
                                 </div>
                             </div>
                             <hr>
                             <div class="">
-                                @if($roInvoice->purchaseOrder->transport)
-                                    <h6>Dengan Detail Logistik / Pengangkutan</h6>
-                                    <a href="{{route('logistic.setting', $roInvoice->purchaseOrder->transport->logistic->id)}}" target="_blank" class="border border-primary p-1 px-2 rounded-2 d-inline-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-truck-delivery mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->name }}
+                                <h6>Dengan Detail Logistik / Pengangkutan</h6>
+                                @if ($roInvoice->purchaseOrder->transport)
+                                    <a href="{{ route('logistic.setting', $roInvoice->purchaseOrder->transport->logistic->id) }}"
+                                        target="_blank"
+                                        class="border border-primary p-1 px-2 rounded-2 d-inline-flex align-items-center fs-2 mb-1 gap-2">
+                                        <i class="ti ti-truck-delivery mb-0 fs-3"></i>
+                                        {{ $roInvoice->purchaseOrder->transport->logistic->name }}
                                     </a>
-                                    <a href="javascript:void(0);" title="Klik untuk melihat detail" class="d-flex text-secondary align-items-center fs-2 mb-1 gap-2"
-                                        data-bs-toggle="modal" data-bs-target="#detailDelivery-{{$roInvoice->purchaseOrder->id}}"
-                                    >
+                                    <a href="javascript:void(0);" title="Klik untuk melihat detail"
+                                        class="d-flex text-secondary align-items-center fs-2 mb-1 gap-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#detailDelivery-{{ $roInvoice->purchaseOrder->id }}">
                                         <i class="ti ti-exchange mb-0 fs-3"></i> Detail Antar Jemput
                                     </a>
                                     <!-- List Product modal -->
-                                    <div class="modal fade " id="detailDelivery-{{$roInvoice->purchaseOrder->id}}" tabindex="-1"
-                                        aria-labelledby="vertical-center-modal" aria-hidden="true">
+                                    <div class="modal fade " id="detailDelivery-{{ $roInvoice->purchaseOrder->id }}"
+                                        tabindex="-1" aria-labelledby="vertical-center-modal" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                             <div class="modal-content">
                                                 <div class="modal-header d-flex align-items-center">
@@ -178,13 +257,17 @@
                                                     <div class="p-3 rounded-3 border border-dashed mb-2 border-secondary">
                                                         <div class="fs-2 text-muted">Penjemputan Barang</div>
                                                         <div>
-                                                            <div class="fs-3">{{$roInvoice->purchaseOrder->pickup->address.', '.$roInvoice->purchaseOrder->pickup->city.'. '.$roInvoice->purchaseOrder->pickup->postal_code}}</div>
+                                                            <div class="fs-3">
+                                                                {{ $roInvoice->purchaseOrder->pickup->address . ', ' . $roInvoice->purchaseOrder->pickup->city . '. ' . $roInvoice->purchaseOrder->pickup->postal_code }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div class="p-3 rounded-3 border border-dashed border-primary">
                                                         <div class="fs-2 text-muted">Pengantaran Barang</div>
                                                         <div>
-                                                            <div class="fs-3">{{$roInvoice->purchaseOrder->delivery->address.', '.$roInvoice->purchaseOrder->delivery->city.'. '.$roInvoice->purchaseOrder->delivery->postal_code}}</div>
+                                                            <div class="fs-3">
+                                                                {{ $roInvoice->purchaseOrder->delivery->address . ', ' . $roInvoice->purchaseOrder->delivery->city . '. ' . $roInvoice->purchaseOrder->delivery->postal_code }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -193,15 +276,19 @@
                                     </div>
                                     <div class="fw-normal fs-1 text-muted" style="">Contact Person</div>
                                     <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-user-circle mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->cp_name }}
+                                        <i class="ti ti-user-circle mb-0 fs-3"></i>
+                                        {{ $roInvoice->purchaseOrder->transport->logistic->cp_name }}
                                     </div>
                                     <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-mail mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->cp_email ?? '-' }}
+                                        <i class="ti ti-mail mb-0 fs-3"></i>
+                                        {{ $roInvoice->purchaseOrder->transport->logistic->cp_email ?? '-' }}
                                     </div>
                                     <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-phone mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->cp_phone ?? '-' }}
+                                        <i class="ti ti-phone mb-0 fs-3"></i>
+                                        {{ $roInvoice->purchaseOrder->transport->logistic->cp_phone ?? '-' }}
                                     </div>
-                                
+                                @else
+                                    <div>Diurus oleh Principal</div>
                                 @endif
 
                                 <hr>
@@ -218,16 +305,18 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
+
                         <div class="col-md-4 mb-3 mb-md-0">
                             <div class="mb-3">
                                 <h6>Produk yang diproses</h6>
                                 <button type="button"
                                     class="dropdown-item fs-2 text-center d-inline-flex p-2 px-3 align-items-center gap-2 bg-secondary text-white rounded-3"
-                                    data-bs-toggle="modal" data-bs-target="#produkModal-{{$roInvoice->purchaseOrder->id}}"><i
-                                        class="fs-4 ti ti-package"></i> {{ count($roInvoice->purchaseOrder->products) }} Produk</button>
+                                    data-bs-toggle="modal" data-bs-target="#produkModal-{{$roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->id : $roInvoice->id}}"><i
+                                        class="fs-4 ti ti-package"></i> {{ count($roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->products : $roInvoice->requestOrder->products) }} Produk</button>
 
                                 <!-- List Product modal -->
-                                <div class="modal fade " id="produkModal-{{$roInvoice->purchaseOrder->id}}" tabindex="-1"
+                                <div class="modal fade " id="produkModal-{{$roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->id : $roInvoice->id}}" tabindex="-1"
                                     aria-labelledby="vertical-center-modal" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                         <div class="modal-content">
@@ -241,9 +330,11 @@
                                             <div class="modal-body pt-0">
                                                 @foreach ($roInvoice->product_qty_price['products'] as $productId => $productRo)
                                                     @php
-                                                    $productPo = \App\Models\PurchaseOrderProduct::where('purchase_order_id', $roInvoice->purchase_order_id)->where('product_id',$productId)->first(); // Harga jual (diambil dari cart)
+                                                    $productPo = (object) ['product' => \App\Models\Product::where('id',$productId)->first()];
+                                                    if($roInvoice->purchaseOrder)
+                                                        $productPo = \App\Models\PurchaseOrderProduct::where('purchase_order_id', $roInvoice->purchase_order_id)->where('product_id',$productId)->first(); // Harga jual (diambil dari cart)
                                                     @endphp
-                                                    <div class="border border-1 border-dashed border-primary {{$loop->index+1 == count($roInvoice->purchaseOrder->products) ? '' : 'mb-2'}} p-3 rounded-3">
+                                                    <div class="border border-1 border-dashed border-primary {{$loop->index+1 == count($roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->products : $roInvoice->requestOrder->products) ? '' : 'mb-2'}} p-3 rounded-3">
                                                         <div
                                                             class="d-flex align-items-center gap-2 mb-2 {{ $loop->index == 0 ? '' : 'mt-3' }}">
                                                             <img src="{{ $productPo->product->image ? '/storage/' . $productPo->product->image : 'https://placehold.co/300?text=' . $productPo->product->name }}"
@@ -274,12 +365,14 @@
                                                                 <label for="price_buy" class="text-muted fs-1">Dengan Harga Jual</label>
                                                                 <div>{{ formatRupiah($productRo['price_sale']) }}</div>
                                                             </div>
+                                                            @if($roInvoice->purchaseOrder)
                                                             <div>
                                                                 <label for="qty" class="text-muted fs-1">Dikemas Dengan </label>
                                                                 <div class="d-flex align-items-center gap-2">
                                                                     {{ $productPo->pack->name.' @ '.$productPo->pack->capacity.' '.$productPo->pack->unit->code }}
                                                                 </div>
                                                             </div>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 @endforeach

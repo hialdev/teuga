@@ -68,6 +68,9 @@ class UnitController extends Controller
             if($unit->packs->count() > 0){
                 return redirect()->back()->with('error', 'Gagal menghapus unit, unit '.$unit->name.' memiliki data Pengemasan, Hapus terlebih dahulu atau perbarui ke unit yang lain agar dapat menghapus unit.');
             }
+            if($unit->products->count() > 0){
+                return redirect()->back()->with('error', 'Gagal menghapus unit, unit '.$unit->name.' terhubung ke data produk, Kelola nilai unit pada product terkait dahulu untuk menghapus unit.');
+            }
             $unit->delete();
 
             return redirect()->route('unit.index')->with('success', 'unit '.$unit->name.' berhasil dihapus.');

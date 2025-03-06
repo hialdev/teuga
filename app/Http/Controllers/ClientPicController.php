@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClientPic;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ClientPicController extends Controller
 {
@@ -15,7 +16,13 @@ class ClientPicController extends Controller
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'client_id' => 'required|string|exists:osano.clients,id',
             'parent_pic_id' => 'nullable|string|exists:osano.client_pics,id',
-            'name' => 'required|string|min:3|unique:osano.client_pics,name',
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.client_pics', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('client_id', $request->client_id);
+                    }),
+            ],
             'email' => 'nullable|email|min:4',
             'phone' => 'nullable|numeric|min:4',
             'description' => 'nullable|string|min:4',
@@ -48,7 +55,13 @@ class ClientPicController extends Controller
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'client_id' => 'required|string|exists:osano.clients,id',
             'parent_pic_id' => 'nullable|string|exists:osano.client_pics,id',
-            'name' => 'required|string|min:3|unique:osano.client_pics,name,'.$pic_id,
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.client_pics', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('client_id', $request->client_id);
+                    })->ignore($id),
+            ],
             'email' => 'nullable|email|min:4',
             'phone' => 'nullable|numeric|min:4',
             'description' => 'nullable|string|min:4',

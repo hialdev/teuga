@@ -25,8 +25,8 @@ class Client extends Model
             $model->id = (string) Str::uuid();
         });
         static::deleting(function ($model) {
-            $model->addresses()->delete();
-            $model->pics->each->delete();
+            $model?->addresses()?->delete();
+            $model?->pics?->each->delete();
             if ($model->image) {
                 Storage::disk('public')->delete($model->image);
             }

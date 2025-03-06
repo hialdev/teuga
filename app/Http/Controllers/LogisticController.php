@@ -28,6 +28,7 @@ class LogisticController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.logistics,name',
+            'npwp' => 'nullable|numeric|digits_between:15,16',
             'email' => 'nullable|email',
             'phone' => 'nullable|numeric',
             'fax' => 'nullable|numeric',
@@ -44,6 +45,7 @@ class LogisticController extends Controller
                 $logistic->image = $imagePath;
             }
             $logistic->name = $request->get('name');
+            $logistic->npwp = $request->get('npwp');
             $logistic->email = $request->get('email');
             $logistic->phone = $request->get('phone');
             $logistic->fax = $request->get('fax');
@@ -70,6 +72,7 @@ class LogisticController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.logistics,name',
+            'npwp' => 'nullable|numeric|digits_between:15,16',
             'email' => 'nullable|email',
             'phone' => 'nullable|numeric',
             'fax' => 'nullable|numeric',
@@ -91,6 +94,7 @@ class LogisticController extends Controller
             }
             $logistic->name = $request->get('name');
             $logistic->email = $request->get('email');
+            $logistic->npwp = $request->get('npwp');
             $logistic->phone = $request->get('phone');
             $logistic->fax = $request->get('fax');
             $logistic->description = $request->get('description');

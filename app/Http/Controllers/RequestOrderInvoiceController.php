@@ -27,4 +27,18 @@ class RequestOrderInvoiceController extends Controller
         
         return view('request_orders.invoice.show', compact('roInvoice'));
     }
+
+    public function destroy($id){
+        try{
+            $roInvoice = RequestOrderInvoice::findOrFail($id);
+            if($roInvoice->trx)
+                return redirect()->back()->with('error', 'Tidak dapat menghapus Invoice, Error: Invoice sudah di catat ke Jurnal Akutansi.');
+            if($roInvoice->payments->count() > 0)
+                return redirect()->back()->with('error', 'Tidak dapat menghapus Invoice, Error: Terdapat Pembayaran yang dilakukan didalamnya.');
+
+            $roInvoice->delete();
+        }catch (\Exception $e){
+            return redirect()->back()->with('error', 'Gagal menghapus Invoice, Error: '.$e->getMessage());
+        }
+    }
 }

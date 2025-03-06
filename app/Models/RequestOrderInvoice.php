@@ -46,32 +46,54 @@ class RequestOrderInvoice extends Model
     {
         $purchaseOrder = $this->purchaseOrder;
         $requestOrder = $this->requestOrder;
-
         $products = [];
 
-        foreach ($purchaseOrder->products as $poProduct) {
-            $productId = $poProduct->product_id;
+        if($purchaseOrder){
+            foreach ($purchaseOrder->products as $poProduct) {
+                $productId = $poProduct->product_id;
 
-            // Ambil RequestOrderProduct untuk mendapatkan price_buy
-            $roProduct = $requestOrder->products->where('product_id', $productId)->first();
+                // Ambil RequestOrderProduct untuk mendapatkan price_buy
+                $roProduct = $requestOrder->products->where('product_id', $productId)->first();
 
-            $qty = $poProduct->qty;
-            $price_buy = $roProduct ? $poProduct->price_buy : 0; // pastikan ada data, jika tidak 0
-            $price_sale = $roProduct->price_sale;
+                $qty = $poProduct->qty;
+                $price_buy = $roProduct ? $poProduct->price_buy : 0; // pastikan ada data, jika tidak 0
+                $price_sale = $roProduct->price_sale;
 
-            $products[$productId] = [
-                'qty' => $qty,
-                'price_buy' => $price_buy,
-                'price_sale' => $price_sale,
-                'total_price_buy' => $qty * $price_buy,
-                'total_price_sale' => $qty * $price_sale,
-            ];
+                $products[$productId] = [
+                    'qty' => $qty,
+                    'price_buy' => $price_buy,
+                    'price_sale' => $price_sale,
+                    'total_price_buy' => $qty * $price_buy,
+                    'total_price_sale' => $qty * $price_sale,
+                ];
+            }
+
+            // Hitung total keseluruhan
+            $total_price = array_sum(array_column($products, 'total_price_sale'));
+            $tax = $requestOrder->tax;
+            $total_price_taxed = $total_price + ($total_price * ($tax / 100));
+        }else{
+            foreach ($requestOrder->products as $roProduct) {
+                $productId = $roProduct->product_id;
+
+                $qty = $roProduct->qty;
+                $price_buy = $roProduct ? $roProduct->price_buy : 0; // pastikan ada data, jika tidak 0
+                $price_sale = $roProduct->price_sale;
+
+                $products[$productId] = [
+                    'qty' => $qty,
+                    'price_buy' => $price_buy,
+                    'price_sale' => $price_sale,
+                    'total_price_buy' => $qty * $price_buy,
+                    'total_price_sale' => $qty * $price_sale,
+                ];
+            }
+
+            // Hitung total keseluruhan
+            $total_price = array_sum(array_column($products, 'total_price_sale'));
+            $tax = $requestOrder->tax;
+            $total_price_taxed = $total_price + ($total_price * ($tax / 100));
         }
-
-        // Hitung total keseluruhan
-        $total_price = array_sum(array_column($products, 'total_price_sale'));
-        $tax = $requestOrder->tax;
-        $total_price_taxed = $total_price + ($total_price * ($tax / 100));
 
         return [
             'products' => $products,
@@ -95,6 +117,13 @@ class RequestOrderInvoice extends Model
         $percentage = round(($totalPaid / $this->product_qty_price['total_price_taxed']) * 100, 2);
         return $percentage;
     }
+
+    public function getPaymentPercentageSecAttribute()
+    {
+        $totalPaid = $this->payments()->sum('paid_total'); 
+        $percentage = round(($totalPaid / $this->requestOrder->total_price_taxed) * 100, 2);
+        return $percentage;
+    }
     
     public function getSumPaidTotalAttribute()
     {
@@ -111,5 +140,9 @@ class RequestOrderInvoice extends Model
 
     public function payments(){
         return $this->hasMany(RequestOrderPayment::class, 'request_order_invoice_id');
+    }
+
+    public function trx(){
+        return $this->hasOne(ROInvoiceTransaction::class, 'ro_invoice_id', 'id');
     }
 }

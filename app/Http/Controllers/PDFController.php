@@ -50,7 +50,7 @@ class PDFController extends Controller
 
     public function debug($id){
         $kop_image = filePath(setting('letter.background'));
-        return view('pdf.spk', compact('id', 'kop_image'));
+        return view('pdf.partial', compact('id', 'kop_image'));
     }
 
     protected function getDataByType($type, $id)

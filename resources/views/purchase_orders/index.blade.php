@@ -170,6 +170,7 @@
                                         $statusInvoice = [
                                             '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
                                             '1' => ['label' => 'Ditagih','color' => 'success'],
+                                            '2' => ['label' => 'Ditagih Bertahap','color' => 'success'],
                                         ];
                                     @endphp
                                     <div>
@@ -180,7 +181,7 @@
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
                                         </div>
-                                        <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$purchase->requestOrder->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$purchase->requestOrder->generate_invoice]['label'] }}</h6>
+                                        <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[($purchase->requestOrder->is_partial ?? $purchase->requestOrder->generate_invoice)]['color'] }} mb-1" style="">{{ $statusInvoice[($purchase->requestOrder->is_partial ?? $purchase->requestOrder->generate_invoice)]['label'] }}</h6>
                                     </div>
                                     @else
                                     <div class="fs-2">Tidak berdasarkan Permintaan Client</div>

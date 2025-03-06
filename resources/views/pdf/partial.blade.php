@@ -166,7 +166,7 @@ table.second-table>thead,table.second-table>tbody{
                     @endphp
                     @foreach ($invoice->purchaseOrder->products as $product)
                     @php
-                        $reqproduct = \App\Models\RequestOrderProduct::where('product_id', $product->product_id)->firstOrFail();
+                        $reqproduct = \App\Models\RequestOrderProduct::where('product_id', $product->product_id)->where('request_order_id', $invoice->requestOrder->id)->firstOrFail();
                         $totalPrice += $reqproduct->price_sale * $product->qty;
                     @endphp
                     <tr>
@@ -194,6 +194,10 @@ table.second-table>thead,table.second-table>tbody{
                     </tr>
                 </tbody>
             </table>
+
+            {{-- @php
+                dd($id, \App\Models\RequestOrderInvoice::where('id',$id)->with('requestOrder.products')->get(), $invoice->requestOrder->products, $reqproduct, $product->qty, $totalPrice);
+            @endphp --}}
         </div>
 
         <table class="w-100">

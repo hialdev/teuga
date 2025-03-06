@@ -722,13 +722,13 @@
                                         <div class="d-flex align-items-end flex-wrap flex-sm-nowrap gap-2">
                                             <div class="flex-grow-1">
                                                 <label for="qty" class="form-label mb-0 fs-2">Proses Sebanyak
-                                                    ({{ $cart->unit->code }})</label>
+                                                    ({{ $cart?->unit?->code }})</label>
                                                 @if($purchase->requestOrder)
                                                     <div class="fs-2 mb-1 text-muted">
                                                         Belum diproses : 
                                                         {{ 
                                                             $reqproduct->requestOrder->getProcessingAnalytics()[$reqproduct->product_id]['remaining_qty']
-                                                            .' '.$cart->unit->code
+                                                            .' '.$cart?->unit?->code
                                                         }}
                                                     </div>
                                                 @endif
@@ -980,7 +980,7 @@
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <a href="{{route('purchase-order.invoice.show', $purchase->invoice->id)}}" target="_blank" class="btn btn-primary"><i class="ti ti-credit-card me-2"></i>Pembayaran</a>
-                                        @if(!$purchase->clientInvoice && $purchase->requestOrder)
+                                        @if(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice && $purchase->requestOrder->invoice->purchaseOrder)
                                             <button data-bs-toggle="modal" data-bs-target="#partialClientInvoiceModal-{{$purchase->id}}" class="btn btn-secondary" style=""><i class="ti ti-file-invoice"></i> Buat Partial Invoice</button>
                                         @endif
                                     </div>
@@ -1218,7 +1218,7 @@
                         </div>
                     </div>
 
-                    @if($purchase->requestOrder && !$purchase->clientInvoice)
+                    @if(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice && $purchase->requestOrder->invoice->purchaseOrder)
                     <!-- invoicing Modal -->
                     <div class="modal fade" id="partialClientInvoiceModal-{{$purchase->id}}" tabindex="-1"
                         aria-labelledby="vertical-center-modal" aria-hidden="true">
@@ -1275,7 +1275,7 @@
                                         <h6 class="fw-semibold text-start text-sm-end text-md-start fs-2 text-{{ $statusPembayaran[$purchase->clientInvoice->payment_status]['color'] }} mb-1" style="">{{ $statusPembayaran[$purchase->clientInvoice->payment_status]['label'] }}</h6>
                                     </div>
                                     <div class="d-flex align-items-center gap-2 ms-auto">
-                                        <a href="{{route('request-order.invoice.show', $purchase->clientInvoice->id)}}" target="_blank" class="btn btn-primary"><i class="ti ti-credit-card me-0 me-sm-2"></i><span class="d-none d-md-block">Pembayaran</span></a>
+                                        <a href="{{route('request-order.invoice.show', $purchase->clientInvoice->id)}}" target="_blank" class="btn btn-primary"><i class="ti ti-credit-card me-0 me-sm-2"></i><span class="d-none d-md-inline-block">Pembayaran</span></a>
                                         <button onclick="seePDF('pdf.partial','{{$purchase->clientInvoice->id}}')" class="btn btn-secondary" style="background:rgb(186, 55, 55); border-color:rgb(186, 55, 55)"><i class="ti ti-printer me-2"></i>Cetak Partial Invoice</button>
                                     </div>
                                 </div>

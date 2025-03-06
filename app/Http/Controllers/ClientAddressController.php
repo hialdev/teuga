@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ClientAddress;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ClientAddressController extends Controller
 {
@@ -12,8 +13,14 @@ class ClientAddressController extends Controller
             'client_id' => (string) $id,
         ]);
         $request->validate([
-            'name' => 'required|string|min:3|unique:osano.client_addresses,name',
             'client_id' => 'required|string|exists:osano.clients,id',
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.client_addresses', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('client_id', $request->client_id);
+                    }),
+            ],
             'city' => 'required|string|exists:cities,city_name',
             'postal_code' => 'required|numeric|min:4',
             'address' => 'required|string|min:4',
@@ -38,8 +45,15 @@ class ClientAddressController extends Controller
             'client_id' => (string) $id,
         ]);
         $request->validate([
-            'name' => 'required|string|min:3|unique:osano.client_addresses,name,'.$address_id,
             'client_id' => 'required|string|exists:osano.clients,id',
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.client_addresses', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('client_id', $request->client_id);
+                    })
+                    ->ignore($id),
+            ],
             'city' => 'required|string|exists:cities,city_name',
             'postal_code' => 'required|numeric|min:4',
             'address' => 'required|string|min:4',

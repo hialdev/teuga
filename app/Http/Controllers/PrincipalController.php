@@ -29,6 +29,7 @@ class PrincipalController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.principals,name',
+            'npwp' => 'nullable|numeric|digits_between:15,16',
             'email' => 'nullable|email',
             'phone' => 'nullable|numeric',
             'fax' => 'nullable|numeric',
@@ -45,6 +46,7 @@ class PrincipalController extends Controller
                 $principal->image = $imagePath;
             }
             $principal->name = $request->get('name');
+            $principal->npwp = $request->get('npwp');
             $principal->email = $request->get('email');
             $principal->phone = $request->get('phone');
             $principal->fax = $request->get('fax');
@@ -71,7 +73,8 @@ class PrincipalController extends Controller
     public function update($id, Request $request){
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
-            'name' => 'required|string|min:3|unique:osano.principals,name',
+            'name' => 'required|string|min:3|unique:osano.principals,name,'.$id,
+            'npwp' => 'nullable|numeric|digits_between:15,16',
             'email' => 'nullable|email',
             'phone' => 'nullable|numeric',
             'fax' => 'nullable|numeric',
@@ -92,6 +95,7 @@ class PrincipalController extends Controller
                 $principal->image = $imagePath;
             }
             $principal->name = $request->get('name');
+            $principal->npwp = $request->get('npwp');
             $principal->email = $request->get('email');
             $principal->phone = $request->get('phone');
             $principal->fax = $request->get('fax');

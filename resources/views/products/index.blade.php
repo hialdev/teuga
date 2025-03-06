@@ -105,7 +105,7 @@
                                 </td>
                                 <td>
                                     <div class="badge bg-secondary rounded-3 fw-semibold fs-2">
-                                        {{ $product->unit->name.' ('.$product->unit->code.')' }}</div>
+                                        {{ $product->unit ? $product->unit->name.' ('.$product->unit->code.')' : 'Satuan / unit belum ditentukan'}}</div>
                                 </td>
                                 <td>
                                     <div class="d-flex flex-column align-items-start gap-2">

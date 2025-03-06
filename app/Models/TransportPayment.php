@@ -41,4 +41,8 @@ class TransportPayment extends Model
 
         return generateCode($type, $newNumber); // Fungsi generateCode dengan nilai default
     }
+
+    public function invoice(){
+        return $this->belongsTo(TransportInvoice::class, 'transport_invoice_id');
+    }
 }

@@ -104,4 +104,8 @@ class PurchaseOrderInvoice extends Model
     public function payments(){
         return $this->hasMany(PurchaseOrderPayment::class, 'purchase_order_invoice_id');
     }
+
+    public function trx(){
+        return $this->hasOne(POInvoiceTransaction::class, 'po_invoice_id', 'id');
+    }
 }

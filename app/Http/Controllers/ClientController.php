@@ -29,6 +29,7 @@ class ClientController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.clients,name',
+            'npwp' => 'nullable|numeric|digits_between:15,16',
             'email' => 'nullable|email',
             'phone' => 'nullable|numeric',
             'fax' => 'nullable|numeric',
@@ -45,6 +46,7 @@ class ClientController extends Controller
                 $client->image = $imagePath;
             }
             $client->name = $request->get('name');
+            $client->npwp = $request->get('npwp');
             $client->email = $request->get('email');
             $client->phone = $request->get('phone');
             $client->fax = $request->get('fax');
@@ -73,6 +75,7 @@ class ClientController extends Controller
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.clients,name,'.$id,
             'email' => 'nullable|email',
+            'npwp' => 'nullable|numeric|digits_between:15,16',
             'phone' => 'nullable|numeric',
             'fax' => 'nullable|numeric',
             'description' => 'nullable|string',

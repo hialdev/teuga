@@ -28,5 +28,17 @@ class PurchaseOrderInvoiceController extends Controller
         return view('purchase_orders.invoice.show', compact('poInvoice'));
     }
 
-    
+    public function destroy($id){
+        try{
+            $poInvoice = PurchaseOrderInvoice::findOrFail($id);
+            if($poInvoice->trx)
+                return redirect()->back()->with('error', 'Tidak dapat menghapus Invoice, Error: Invoice sudah di catat ke Jurnal Akutansi.');
+            if($poInvoice->payments->count() > 0)
+                return redirect()->back()->with('error', 'Tidak dapat menghapus Invoice, Error: Terdapat Pembayaran yang dilakukan didalamnya.');
+
+            $poInvoice->delete();
+        }catch (\Exception $e){
+            return redirect()->back()->with('error', 'Gagal menghapus Invoice, Error: '.$e->getMessage());
+        }
+    }
 }

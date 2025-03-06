@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PrincipalPic;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PrincipalPicController extends Controller
 {
@@ -15,7 +16,13 @@ class PrincipalPicController extends Controller
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'principal_id' => 'required|string|exists:osano.principals,id',
             'parent_pic_id' => 'nullable|string|exists:osano.principal_pics,id',
-            'name' => 'required|string|min:3|unique:osano.principal_pics,name',
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.principal_pics', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('principal_id', $request->principal_id);
+                    }),
+            ],
             'email' => 'nullable|email|min:4',
             'phone' => 'nullable|numeric|min:4',
             'description' => 'nullable|string|min:4',
@@ -48,7 +55,14 @@ class PrincipalPicController extends Controller
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'principal_id' => 'required|string|exists:osano.principals,id',
             'parent_pic_id' => 'nullable|string|exists:osano.principal_pics,id',
-            'name' => 'required|string|min:3|unique:osano.principal_pics,name,'.$pic_id,
+            'name' => [
+                'required', 'string', 'min:3',
+                Rule::unique('osano.principal_pics', 'name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('principal_id', $request->principal_id);
+                    })
+                    ->ignore($request->id),
+            ],
             'email' => 'nullable|email|min:4',
             'phone' => 'nullable|numeric|min:4',
             'description' => 'nullable|string|min:4',

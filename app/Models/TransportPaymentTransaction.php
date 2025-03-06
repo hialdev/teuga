@@ -4,15 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class Unit extends Model
+class TransportPaymentTransaction extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
-    protected $connection = 'osano';
-    protected $table = 'units';
+    protected $connection = 'accounting';
+    protected $table = 'tp_payment_transactions';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -25,15 +24,7 @@ class Unit extends Model
             $model->id = (string) Str::uuid();
         });
         static::deleting(function ($model) {
-            
+        
         });
-    }
-
-    public function packs(){
-        return $this->hasMany(Pack::class, 'unit_id');
-    }
-
-    public function products(){
-        return $this->hasMany(Product::class, 'unit_id');
     }
 }

@@ -59,6 +59,7 @@
     </style>
 @endsection
 @section('content')
+    
     <div class="card bg-info-subtle shadow-none position-relative overflow-hidden mb-4">
         <div class="card-body px-4 py-3">
             <div class="row align-items-center">
@@ -94,10 +95,41 @@
                 ];    
                 @endphp
                 <a href="{{ route('purchase-order.add', ['reqid' => $reqorder->id]) }}" class="btn btn-primary {{$reqorder->status == '2' ? 'd-none' : ''}}"><i class="ti ti-building-factory me-1"></i> <span class="d-none d-sm-inline-block">Proses</span></a>
+                @if($reqorder->status == '2' && !$reqorder->invoice)
+                <button data-bs-toggle="modal" data-bs-target="#generateInvoiceModal-{{$reqorder->id}}" class="btn btn-secondary" style=""><i class="ti ti-file-invoice"></i> Buat Invoice</button>
+                @endif
                 <div>
                     <div class="fw-normal fs-1 text-muted" style="">Status</div>
                     <h6 class="fw-semibold fs-2 text-{{ $status[$reqorder->status]['color'] }} mb-1" style="">{{ $status[$reqorder->status]['label'] }}</h6>
                 </div>
+
+                @if($reqorder->status == '2')
+                <!-- invoicing Modal -->
+                <div class="modal fade" id="generateInvoiceModal-{{$reqorder->id}}" tabindex="-1"
+                    aria-labelledby="vertical-center-modal" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header d-flex align-items-center">
+                                <h4 class="modal-title" id="myLargeModalLabel" style="white-space: normal">
+                                    Buat Penagihan / Invoice Client Keseluruhan
+                                </h4>
+                                <button type="button" class="btn-close mb-auto" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body pt-0">
+                                <form action="{{ route('request-order.generate', $reqorder->id) }}" method="POST">
+                                    @csrf
+                                    <p class="text-muted" style="white-space: normal">Membuat penagihan / Invoice ke Client Secara Keseluruhan dari Request Order {{$reqorder->code}} ? <strong>Invoice akan dibuat untuk Client {{$reqorder->client->name}}</strong>. Akan gagal apabila terdapat Invoice Partial pada permintaan ini.</p>
+                                    <div class="d-flex gap-1 align-items-center justify-content-end">
+                                        <button type="submit"
+                                            class="btn btn-primary w-100">Ya, Buat Invoice</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
             <div class="col-md-6 order-first order-md-0 d-flex align-items-start gap-2 flex-wrap">
                 <div class="stepper flex-grow-1 overflow-auto">
@@ -236,6 +268,7 @@
                                         $statusInvoice = [
                                             '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
                                             '1' => ['label' => 'Ditagih','color' => 'success'],
+                                            '2' => ['label' => 'Ditagih Bertahap','color' => 'success'],
                                         ];
                                     @endphp
                                     <div>
@@ -246,7 +279,7 @@
                                     <div>
                                         <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
                                         </div>
-                                        <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$reqorder->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$reqorder->generate_invoice]['label'] }}</h6>
+                                        <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[($reqorder->is_partial ?? $reqorder->generate_invoice)]['color'] }} mb-1" style="">{{ $statusInvoice[($reqorder->is_partial ?? $reqorder->generate_invoice)]['label'] }}</h6>
                                     </div>
                                     <hr>
                                     <h6>Timestamp</h6>
@@ -627,8 +660,8 @@
                                         </div>
                                         <div class="d-flex align-items-end gap-2">
                                             <div>
-                                                <label for="qty" class="form-label fs-2">Dibeli Sebanyak
-                                                    ({{ $cart->unit->code }})</label>
+                                                <label for="qty" class="form-label {{ $cart->unit ? '' : 'text-danger'}} fs-2">
+                                                    {{ $cart->unit ? 'Dibeli Sebanyak ('.$cart?->unit?->code.')' : 'Satuan produk belum diatur' }}</label>
                                                 <div class="d-flex align-items-center gap-2">
                                                     <input type="hidden" name="product_id[]"
                                                         value="{{ $item['id'] }}">
@@ -1143,326 +1176,358 @@
                     </div>
                 </div>
 
-                @forelse ($reqorder->invoices as $roInvoice)
-                <div class="card">
-                    <div class="card-body">
-                        <div class="btn-accordion p-3 border border-2 rounded-3 border-dashed">
-                            <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between" style="cursor: pointer">
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
+                @if ($reqorder->invoice && !$reqorder->invoice->purchaseOrder)
+                    @php
+                        $roInvoice = $reqorder->invoice;
+                    @endphp
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="btn-accordion p-3 border border-2 rounded-3 border-dashed">
+                                <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between" style="cursor: pointer">
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
+                                        </div>
+                                        <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->code }}</h6>
                                     </div>
-                                    <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->code }}</h6>
-                                </div>
-                                @php
-                                    $status = [
-                                        '0' => ['label' => 'Pending','color' => 'secondary'],
-                                        '1' => ['label' => 'Diproses','color' => 'warning',],
-                                        '2' => ['label' => 'Selesai','color' => 'success'],
-                                    ];
-                                @endphp
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="">Status Pembayaran
+                                    @php
+                                        $status = [
+                                            '0' => ['label' => 'Pending','color' => 'secondary'],
+                                            '1' => ['label' => 'Diproses','color' => 'warning',],
+                                            '2' => ['label' => 'Selesai','color' => 'success'],
+                                        ];
+                                    @endphp
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="">Status Pembayaran
+                                        </div>
+                                        <h6 class="fw-semibold fs-2 text-{{ $status[$roInvoice->payment_status]['color'] }} mb-1" style="">{{ $status[$roInvoice->payment_status]['label'] }}</h6>
                                     </div>
-                                    <h6 class="fw-semibold fs-2 text-{{ $status[$roInvoice->payment_status]['color'] }} mb-1" style="">{{ $status[$roInvoice->payment_status]['label'] }}</h6>
+                                    <div class="flex-grow-1 text-end mb-2 d-flex align-items-center justify-content-end gap-2">
+                                        <div class="fs-1 text-muted">Klik untuk melihat detail</div>
+                                        <a href="{{route('request-order.invoice.show', $roInvoice->id)}}" class="btn btn-primary"><i class="ti ti-credit-card"></i></a>
+                                    </div>
                                 </div>
-                                <div class="flex-grow-1 text-end mb-2 d-flex align-items-center justify-content-end gap-2">
-                                    <div class="fs-1 text-muted">Klik untuk melihat detail</div>
-                                    <a href="{{route('request-order.invoice.show', $roInvoice->id)}}" class="btn btn-primary"><i class="ti ti-credit-card"></i></a>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="w-100">
-                                    <div class="progress mt-1">
-                                        <div class="progress-bar progress-bar-striped text-bg-{{$roInvoice->payment_percentage && $roInvoice->payment_percentage == '100' ? 'success' : 'info' }} progress-bar-animated" role="progressbar"
-                                            aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{$roInvoice->payment_percentage ?? '0'}}%">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="w-100">
+                                        <div class="progress mt-1">
+                                            <div class="progress-bar progress-bar-striped text-bg-{{$roInvoice->payment_percentage && $roInvoice->payment_percentage == '100' ? 'success' : 'info' }} progress-bar-animated" role="progressbar"
+                                                aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{$roInvoice->payment_percentage ?? '0'}}%">
+                                            </div>
                                         </div>
                                     </div>
+                                    <div class="fs-2" style="white-space: nowrap"><strong>{{$roInvoice->payment_percentage ?? '0'}}%</strong> Dibayar</div>
                                 </div>
-                                <div class="fs-2" style="white-space: nowrap"><strong>{{$roInvoice->payment_percentage ?? '0'}}%</strong> Dibayar</div>
                             </div>
-                        </div>
-                        <div class="btn-accordion-content row mt-3">
-                            <div class="col-md-4 mb-3 mb-md-0">
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
+                            <div class="btn-accordion-content row mt-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
+                                        </div>
+                                        <h6 class="fw-semibold text-primary fs-5" style="">{{ $roInvoice->code }}</h6>
                                     </div>
-                                    <h6 class="fw-semibold text-primary fs-5" style="">{{ $roInvoice->code }}</h6>
-                                </div>
-                                <hr>
-                                <h6 class="mb-2">Pembelian Ke Principal</h6>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
-                                    <h6 class="fs-2 fw-semibold text-success mb-1" style="">
-                                        {{ \Carbon\Carbon::parse($roInvoice->purchaseOrder->date)->format('d F Y') }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Pembelian
+                                    <hr>
+                                    <h6>Permintaan Client (Request Order)</h6>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
+                                        <h6 class="fs-2 fw-semibold text-success mb-1" style="">
+                                            {{ \Carbon\Carbon::parse($roInvoice->requestOrder->date)->format('d F Y') }}</h6>
                                     </div>
-                                    <a class="d-flex align-items-center gap-2 mb-1" href="{{route('purchase-order.setting', $roInvoice->purchaseOrder->id)}}">
-                                        <h6 class="fw-semibold text-primary mb-0" style="">{{ $roInvoice->purchaseOrder->code }}</h6>
-                                        <i class="ti ti-external-link"></i>
-                                    </a>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Permintaan
+                                        </div>
+                                        <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->requestOrder->code }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Referensi
+                                            Permintaan (PO)</div>
+                                        <a href="{{ $roInvoice->requestOrder->attachment ? '/storage/'.$roInvoice->requestOrder->attachment : '#' }}" class="badge fs-2 mb-1 bg-primary-subtle text-primary border-primary">
+                                            <i class="ti ti-file"></i>
+                                            {{ $roInvoice->requestOrder->attachment ? $roInvoice->requestOrder->no_refrence : 'Tidak ada Lampiran'}}
+                                        </a>
+                                    </div>
                                 </div>
-                                @php
-                                    $status = [
-                                        '0' => ['label' => 'Pending','color' => 'secondary'],
-                                        '1' => ['label' => 'Diproses','color' => 'warning',],
-                                        '2' => ['label' => 'Selesai','color' => 'success'],
-                                    ];
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="mb-3">
+                                        <h6>Produk yang diproses</h6>
+                                        <button type="button"
+                                            class="dropdown-item fs-2 text-center d-inline-flex p-2 px-3 align-items-center gap-2 bg-secondary text-white rounded-3"
+                                            data-bs-toggle="modal" data-bs-target="#produkProcessedModal-{{$roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->id : $roInvoice->id}}"><i
+                                                class="fs-4 ti ti-package"></i> {{ count($roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->products : $roInvoice->requestOrder->products) }} Produk</button>
 
-                                    $statusInvoice = [
-                                        '0' => ['label' => 'Belum Ditagih / Stock','color' => 'secondary'],
-                                        '1' => ['label' => 'Ditagih','color' => 'success'],
-                                    ];
-                                @endphp
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="">Status Permintaan
-                                    </div>
-                                    <h6 class="fw-semibold fs-2 text-{{ $status[$roInvoice->purchaseOrder->status]['color'] }} mb-1" style="">{{ $status[$roInvoice->purchaseOrder->status]['label'] }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="">Status Penagihan Invoice
-                                    </div>
-                                    <h6 class="fw-semibold fs-2 text-{{ $statusInvoice[$roInvoice->purchaseOrder->generate_invoice]['color'] }} mb-1" style="">{{ $statusInvoice[$roInvoice->purchaseOrder->generate_invoice]['label'] }}</h6>
-                                </div>
-                                <div style="min-width: 10em">
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Deksripsi</div>
-                                    <p class="mb-1 fs-2" style="white-space:normal !important;">{{ $roInvoice->purchaseOrder->description ?? 'tidak ada deskripsi' }}</p>
-                                </div>
-                                <hr>
-                                <h6>Permintaan Client (Request Order)</h6>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
-                                    <h6 class="fs-2 fw-semibold text-success mb-1" style="">
-                                        {{ \Carbon\Carbon::parse($roInvoice->purchaseOrder->requestOrder->date)->format('d F Y') }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Permintaan
-                                    </div>
-                                    <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->purchaseOrder->requestOrder->code }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Referensi
-                                        Permintaan (PO)</div>
-                                    <a href="{{ $roInvoice->purchaseOrder->requestOrder->attachment ? '/storage/'.$roInvoice->purchaseOrder->requestOrder->attachment : '#' }}" class="badge fs-2 mb-1 bg-primary-subtle text-primary border-primary">
-                                        <i class="ti ti-file"></i>
-                                        {{ $roInvoice->purchaseOrder->requestOrder->attachment ? $roInvoice->purchaseOrder->requestOrder->no_refrence : 'Tidak ada Lampiran'}}
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3 mb-md-0">
-                                <div class="">
-                                    <h6>Memesan Ke Principal</h6>
-                                    <a href="{{route('principal.setting', $roInvoice->purchaseOrder->principal->id)}}" target="_blank" class="border border-primary p-1 px-2 rounded-2 d-inline-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-building-skyscraper mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->principal->name }}
-                                    </a>
-                                    <div class="fw-normal fs-1 text-muted" style="">PIC Principal</div>
-                                    <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-user-circle mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->pic->name }}
-                                    </div>
-                                    <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-mail mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->pic->email ?? '-' }}
-                                    </div>
-                                    <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                        <i class="ti ti-phone mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->pic->phone ?? '-' }}
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="">
-                                    @if($roInvoice->purchaseOrder->transport)
-                                        <h6>Dengan Detail Logistik / Pengangkutan</h6>
-                                        <a href="{{route('logistic.setting', $roInvoice->purchaseOrder->transport->logistic->id)}}" target="_blank" class="border border-primary p-1 px-2 rounded-2 d-inline-flex align-items-center fs-2 mb-1 gap-2">
-                                            <i class="ti ti-truck-delivery mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->name }}
-                                        </a>
-                                        <a href="javascript:void(0);" title="Klik untuk melihat detail" class="d-flex text-secondary align-items-center fs-2 mb-1 gap-2"
-                                            data-bs-toggle="modal" data-bs-target="#detailDelivery-{{$roInvoice->purchaseOrder->id}}"
-                                        >
-                                            <i class="ti ti-exchange mb-0 fs-3"></i> Detail Antar Jemput
-                                        </a>
                                         <!-- List Product modal -->
-                                        <div class="modal fade " id="detailDelivery-{{$roInvoice->purchaseOrder->id}}" tabindex="-1"
+                                        <div class="modal fade " id="produkProcessedModal-{{$roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->id : $roInvoice->id}}" tabindex="-1"
                                             aria-labelledby="vertical-center-modal" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                                 <div class="modal-content">
                                                     <div class="modal-header d-flex align-items-center">
                                                         <h4 class="modal-title" id="myLargeModalLabel">
-                                                            Pengantaran dan Penjemputan Barang
+                                                            Produk yang Dipesan
                                                         </h4>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body pt-0">
-                                                        <div class="p-3 rounded-3 border border-dashed mb-2 border-secondary">
-                                                            <div class="fs-2 text-muted">Penjemputan Barang</div>
-                                                            <div>
-                                                                <div class="fs-3">{{$roInvoice->purchaseOrder->pickup->address.', '.$roInvoice->purchaseOrder->pickup->city.'. '.$roInvoice->purchaseOrder->pickup->postal_code}}</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="p-3 rounded-3 border border-dashed border-primary">
-                                                            <div class="fs-2 text-muted">Pengantaran Barang</div>
-                                                            <div>
-                                                                <div class="fs-3">{{$roInvoice->purchaseOrder->delivery->address.', '.$roInvoice->purchaseOrder->delivery->city.'. '.$roInvoice->purchaseOrder->delivery->postal_code}}</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="fw-normal fs-1 text-muted" style="">Contact Person</div>
-                                        <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                            <i class="ti ti-user-circle mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->cp_name }}
-                                        </div>
-                                        <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                            <i class="ti ti-mail mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->cp_email ?? '-' }}
-                                        </div>
-                                        <div class="d-flex align-items-center fs-2 mb-1 gap-2">
-                                            <i class="ti ti-phone mb-0 fs-3"></i> {{ $roInvoice->purchaseOrder->transport->logistic->cp_phone ?? '-' }}
-                                        </div>
-                                    
-                                    @endif
-
-                                    <hr>
-                                    <h6>Timestamp</h6>
-                                    <div class="d-flex flex-column align-items-start gap-2">
-                                        <div class="badge bg-success-subtle text-success rounded-3 fw-semibold fs-2">
-                                            Updated
-                                            at
-                                            : {{ $roInvoice->purchaseOrder->updated_at }}</div>
-                                        <div class="badge bg-primary-subtle text-primary rounded-3 fw-semibold fs-2">
-                                            Created
-                                            at
-                                            : {{ $roInvoice->purchaseOrder->created_at }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-3 mb-md-0">
-                                <div class="mb-3">
-                                    <h6>Produk yang diproses</h6>
-                                    <button type="button"
-                                        class="dropdown-item fs-2 text-center d-inline-flex p-2 px-3 align-items-center gap-2 bg-secondary text-white rounded-3"
-                                        data-bs-toggle="modal" data-bs-target="#produkInvoiceModal-{{$roInvoice->id}}"><i
-                                            class="fs-4 ti ti-package"></i> {{ count($roInvoice->purchaseOrder->products) }} Produk</button>
-
-                                    <!-- List Product modal -->
-                                    <div class="modal fade " id="produkInvoiceModal-{{$roInvoice->id}}" tabindex="-1"
-                                        aria-labelledby="vertical-center-modal" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                            <div class="modal-content">
-                                                <div class="modal-header d-flex align-items-center">
-                                                    <h4 class="modal-title" id="myLargeModalLabel">
-                                                        Produk yang Dipesan
-                                                    </h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                        aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body pt-0">
-                                                    @foreach ($roInvoice->product_qty_price['products'] as $productId => $productRo)
-                                                        @php
-                                                        $productPo = \App\Models\PurchaseOrderProduct::where('purchase_order_id', $roInvoice->purchase_order_id)->where('product_id',$productId)->first(); // Harga jual (diambil dari cart)
-                                                        @endphp
-                                                        <div class="border border-1 border-dashed border-primary {{$loop->index+1 == count($roInvoice->purchaseOrder->products) ? '' : 'mb-2'}} p-3 rounded-3">
-                                                            <div
-                                                                class="d-flex align-items-center gap-2 mb-2 {{ $loop->index == 0 ? '' : 'mt-3' }}">
-                                                                <img src="{{ $productPo->product->image ? '/storage/' . $productPo->product->image : 'https://placehold.co/300?text=' . $productPo->product->name }}"
-                                                                    alt="Image Product {{ $productPo->product->name }} in Cart" class="d-block rounded-2"
-                                                                    style="width: 5em; height:5em; object-fit:cover">
-                                                                <div>
-                                                                    <div class="text-decoration-none text-dark fs-3 fw-semibold">
-                                                                        {{ $productPo->product->name }}</div>
-                                                                    <div class="text-muted fs-2 mb-2">
-                                                                        {{ $productPo->product->description ?? 'tidak ada deskripsi' }}</div>
-                                                                </div>
+                                                        @foreach ($roInvoice->product_qty_price['products'] as $productId => $productRo)
+                                                            @php
+                                                            $productPo = (object) ['product' => \App\Models\Product::where('id',$productId)->first()];
+                                                            if($roInvoice->purchaseOrder)
+                                                                $productPo = \App\Models\PurchaseOrderProduct::where('purchase_order_id', $roInvoice->purchase_order_id)->where('product_id',$productId)->first(); // Harga jual (diambil dari cart)
+                                                            @endphp
+                                                            <div class="border border-1 border-dashed border-primary {{$loop->index+1 == count($roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->products : $roInvoice->requestOrder->products) ? '' : 'mb-2'}} p-3 rounded-3">
                                                                 <div
-                                                                    class="flex-grow-1 d-flex flex-column align-items-end gap-2 justify-content-between">
-                                                                    <div class="fs-2 fw-semibold">Sub Total</div>
-                                                                    <div class="fs-3 fw-bold subtotal">
-                                                                        {{ formatRupiah($productRo['total_price_sale']) }}</div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="d-flex align-items-end gap-2">
-                                                                <div>
-                                                                    <label for="qty" class="text-muted fs-1">Memproses Sebanyak
-                                                                        ({{ $productPo->product->unit->code }})</label>
-                                                                    <div class="d-flex align-items-center gap-2">
-                                                                        {{ $productRo['qty'] }}
+                                                                    class="d-flex align-items-center gap-2 mb-2 {{ $loop->index == 0 ? '' : 'mt-3' }}">
+                                                                    <img src="{{ $productPo->product->image ? '/storage/' . $productPo->product->image : 'https://placehold.co/300?text=' . $productPo->product->name }}"
+                                                                        alt="Image Product {{ $productPo->product->name }} in Cart" class="d-block rounded-2"
+                                                                        style="width: 5em; height:5em; object-fit:cover">
+                                                                    <div>
+                                                                        <div class="text-decoration-none text-dark fs-3 fw-semibold">
+                                                                            {{ $productPo->product->name }}</div>
+                                                                        <div class="text-muted fs-2 mb-2">
+                                                                            {{ $productPo->product->description ?? 'tidak ada deskripsi' }}</div>
+                                                                    </div>
+                                                                    <div
+                                                                        class="flex-grow-1 d-flex flex-column align-items-end gap-2 justify-content-between">
+                                                                        <div class="fs-2 fw-semibold">Sub Total</div>
+                                                                        <div class="fs-3 fw-bold subtotal">
+                                                                            {{ formatRupiah($productRo['total_price_sale']) }}</div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="flex-grow-1">
-                                                                    <label for="price_buy" class="text-muted fs-1">Dengan Harga Jual</label>
-                                                                    <div>{{ formatRupiah($productRo['price_sale']) }}</div>
-                                                                </div>
-                                                                <div>
-                                                                    <label for="qty" class="text-muted fs-1">Dikemas Dengan </label>
-                                                                    <div class="d-flex align-items-center gap-2">
-                                                                        {{ $productPo->pack->name.' @ '.$productPo->pack->capacity.' '.$productPo->pack->unit->code }}
+                                                                <div class="d-flex align-items-end gap-2">
+                                                                    <div>
+                                                                        <label for="qty" class="text-muted fs-1">Memproses Sebanyak
+                                                                            ({{ $productPo->product->unit->code }})</label>
+                                                                        <div class="d-flex align-items-center gap-2">
+                                                                            {{ $productRo['qty'] }}
+                                                                        </div>
                                                                     </div>
+                                                                    <div class="flex-grow-1">
+                                                                        <label for="price_buy" class="text-muted fs-1">Dengan Harga Jual</label>
+                                                                        <div>{{ formatRupiah($productRo['price_sale']) }}</div>
+                                                                    </div>
+                                                                    @if($roInvoice->purchaseOrder)
+                                                                    <div>
+                                                                        <label for="qty" class="text-muted fs-1">Dikemas Dengan </label>
+                                                                        <div class="d-flex align-items-center gap-2">
+                                                                            {{ $productPo->pack->name.' @ '.$productPo->pack->capacity.' '.$productPo->pack->unit->code }}
+                                                                        </div>
+                                                                    </div>
+                                                                    @endif
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
-                                                    <div class="pt-3 mt-3 border-top border-2">
-                                                        <div class="d-flex align-items-center gap-2 justify-content-between">
-                                                            <div class="fs-3 fw-semibold">Total</div>
-                                                            <div class="fs-4 fw-bold">{{ formatRupiah($roInvoice->product_qty_price['total_price']) }}</div>
-                                                        </div>
-                                                        <div class="d-flex align-items-center gap-2 justify-content-between">
-                                                            <div class="fs-3 fw-semibold">PPN</div>
-                                                            <div class="fs-4 fw-bold">{{ $roInvoice->product_qty_price['tax'] }}%</div>
-                                                        </div>
-                                                        <div class="d-flex align-items-center gap-2 justify-content-between">
-                                                            <div class="fs-3 fw-semibold">Grand Total</div>
-                                                            <div class="fs-4 fw-bold">{{ formatRupiah($roInvoice->product_qty_price['total_price_taxed']) }}</div>
+                                                        @endforeach
+                                                        <div class="pt-3 mt-3 border-top border-2">
+                                                            <div class="d-flex align-items-center gap-2 justify-content-between">
+                                                                <div class="fs-3 fw-semibold">Total</div>
+                                                                <div class="fs-4 fw-bold">{{ formatRupiah($roInvoice->product_qty_price['total_price']) }}</div>
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-2 justify-content-between">
+                                                                <div class="fs-3 fw-semibold">PPN</div>
+                                                                <div class="fs-4 fw-bold">{{ $roInvoice->product_qty_price['tax'] }}%</div>
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-2 justify-content-between">
+                                                                <div class="fs-3 fw-semibold">Grand Total</div>
+                                                                <div class="fs-4 fw-bold">{{ formatRupiah($roInvoice->product_qty_price['total_price_taxed']) }}</div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <hr>
-                                <h6>Kalkulasi Pembayaran</h6>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="">Total Nilai Awal</div>
-                                    <h6 class="fw-semibold fs-2 text-primary mb-1" style="">{{ formatRupiah($roInvoice->product_qty_price['total_price']) }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="">Pajak</div>
-                                    <h6 class="fw-semibold fs-2 text-primary mb-1" style="">{{ $roInvoice->purchaseOrder->tax ?? '11' }}%</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="">Total Dengan Pajak</div>
-                                    {{-- @php
-                                        dd($roInvoice->purchaseOrder->total_price, $roInvoice->purchaseOrder->tax, $roInvoice->purchaseOrder->tax && (int)$roInvoice->purchaseOrder->tax != '0' ? $roInvoice->purchaseOrder->tax : 11, ));
-                                    @endphp --}}
-                                    <h6 class="fw-semibold fs-2 text-primary mb-1">
-                                        {{ 
-                                            formatRupiah($roInvoice->product_qty_price['total_price_taxed'])
-                                        }}
-                                    </h6>
-                                </div>
-                                <hr>
-                                <h6>Statistik Pembayaran</h6>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Total Tagihan</div>
-                                    <h6 class="fs-2 fw-semibold text-secondary mb-1" style="">{{ formatRupiah($roInvoice->product_qty_price['total_price_taxed']) }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Dibayarkan</div>
-                                    <h6 class="fs-2 fw-semibold text-success mb-1" style="">{{ formatRupiah($roInvoice->sum_paid_total) }}</h6>
-                                </div>
-                                <div>
-                                    <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Belum Dibayar</div>
-                                    <h6 class="fs-2 fw-semibold text-danger mb-1" style="">{{ formatRupiah($roInvoice->remaining_payment) }}</h6>
+                                    <h6>Statistik Pembayaran</h6>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Total Tagihan</div>
+                                        <h6 class="fs-2 fw-semibold text-secondary mb-1" style="">{{ $roInvoice->purchase_order_id ? formatRupiah($roInvoice->product_qty_price['total_price_taxed']) : formatRupiah($roInvoice->requestOrder->total_price_taxed) }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Dibayarkan</div>
+                                        <h6 class="fs-2 fw-semibold text-success mb-1" style="">{{ formatRupiah($roInvoice->sum_paid_total) }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Belum Dibayar</div>
+                                        <h6 class="fs-2 fw-semibold text-danger mb-1" style="">{{ formatRupiah($roInvoice->remaining_payment) }}</h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                @empty
+                @elseif($reqorder->invoices->count() > 0 && $reqorder->invoice->purchaseOrder)
+                    @foreach ($reqorder->invoices as $roInvoice)
+                        <div class="card">
+                        <div class="card-body">
+                            <div class="btn-accordion p-3 border border-2 rounded-3 border-dashed">
+                                <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between" style="cursor: pointer">
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
+                                        </div>
+                                        <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->code }}</h6>
+                                    </div>
+                                    @php
+                                        $status = [
+                                            '0' => ['label' => 'Pending','color' => 'secondary'],
+                                            '1' => ['label' => 'Diproses','color' => 'warning',],
+                                            '2' => ['label' => 'Selesai','color' => 'success'],
+                                        ];
+                                    @endphp
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="">Status Pembayaran
+                                        </div>
+                                        <h6 class="fw-semibold fs-2 text-{{ $status[$roInvoice->payment_status]['color'] }} mb-1" style="">{{ $status[$roInvoice->payment_status]['label'] }}</h6>
+                                    </div>
+                                    <div class="flex-grow-1 text-end mb-2 d-flex align-items-center justify-content-end gap-2">
+                                        <div class="fs-1 text-muted">Klik untuk melihat detail</div>
+                                        <a href="{{route('request-order.invoice.show', $roInvoice->id)}}" class="btn btn-primary"><i class="ti ti-credit-card"></i></a>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="w-100">
+                                        <div class="progress mt-1">
+                                            <div class="progress-bar progress-bar-striped text-bg-{{$roInvoice->payment_percentage && $roInvoice->payment_percentage == '100' ? 'success' : 'info' }} progress-bar-animated" role="progressbar"
+                                                aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: {{$roInvoice->payment_percentage ?? '0'}}%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="fs-2" style="white-space: nowrap"><strong>{{$roInvoice->payment_percentage ?? '0'}}%</strong> Dibayar</div>
+                                </div>
+                            </div>
+                            <div class="btn-accordion-content row mt-3">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Invoice
+                                        </div>
+                                        <h6 class="fw-semibold text-primary fs-5" style="">{{ $roInvoice->code }}</h6>
+                                    </div>
+                                    <hr>
+                                    <h6>Permintaan Client (Request Order)</h6>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Tanggal</div>
+                                        <h6 class="fs-2 fw-semibold text-success mb-1" style="">
+                                            {{ \Carbon\Carbon::parse($roInvoice->requestOrder->date)->format('d F Y') }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Kode Permintaan
+                                        </div>
+                                        <h6 class="fw-semibold text-primary mb-1" style="">{{ $roInvoice->requestOrder->code }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Referensi
+                                            Permintaan (PO)</div>
+                                        <a href="{{ $roInvoice->requestOrder->attachment ? '/storage/'.$roInvoice->requestOrder->attachment : '#' }}" class="badge fs-2 mb-1 bg-primary-subtle text-primary border-primary">
+                                            <i class="ti ti-file"></i>
+                                            {{ $roInvoice->requestOrder->attachment ? $roInvoice->requestOrder->no_refrence : 'Tidak ada Lampiran'}}
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <div class="mb-3">
+                                        <h6>Produk yang diproses</h6>
+                                        <button type="button"
+                                            class="dropdown-item fs-2 text-center d-inline-flex p-2 px-3 align-items-center gap-2 bg-secondary text-white rounded-3"
+                                            data-bs-toggle="modal" data-bs-target="#produkProcessedModal-{{$roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->id : $roInvoice->id}}"><i
+                                                class="fs-4 ti ti-package"></i> {{ count($roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->products : $roInvoice->requestOrder->products) }} Produk</button>
+
+                                        <!-- List Product modal -->
+                                        <div class="modal fade " id="produkProcessedModal-{{$roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->id : $roInvoice->id}}" tabindex="-1"
+                                            aria-labelledby="vertical-center-modal" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                <div class="modal-content">
+                                                    <div class="modal-header d-flex align-items-center">
+                                                        <h4 class="modal-title" id="myLargeModalLabel">
+                                                            Produk yang Dipesan
+                                                        </h4>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body pt-0">
+                                                        @foreach ($roInvoice->product_qty_price['products'] as $productId => $productRo)
+                                                            @php
+                                                            $productPo = (object) ['product' => \App\Models\Product::where('id',$productId)->first()];
+                                                            if($roInvoice->purchaseOrder)
+                                                                $productPo = \App\Models\PurchaseOrderProduct::where('purchase_order_id', $roInvoice->purchase_order_id)->where('product_id',$productId)->first(); // Harga jual (diambil dari cart)
+                                                            @endphp
+                                                            <div class="border border-1 border-dashed border-primary {{$loop->index+1 == count($roInvoice->purchaseOrder ? $roInvoice->purchaseOrder->products : $roInvoice->requestOrder->products) ? '' : 'mb-2'}} p-3 rounded-3">
+                                                                <div
+                                                                    class="d-flex align-items-center gap-2 mb-2 {{ $loop->index == 0 ? '' : 'mt-3' }}">
+                                                                    <img src="{{ $productPo->product->image ? '/storage/' . $productPo->product->image : 'https://placehold.co/300?text=' . $productPo->product->name }}"
+                                                                        alt="Image Product {{ $productPo->product->name }} in Cart" class="d-block rounded-2"
+                                                                        style="width: 5em; height:5em; object-fit:cover">
+                                                                    <div>
+                                                                        <div class="text-decoration-none text-dark fs-3 fw-semibold">
+                                                                            {{ $productPo->product->name }}</div>
+                                                                        <div class="text-muted fs-2 mb-2">
+                                                                            {{ $productPo->product->description ?? 'tidak ada deskripsi' }}</div>
+                                                                    </div>
+                                                                    <div
+                                                                        class="flex-grow-1 d-flex flex-column align-items-end gap-2 justify-content-between">
+                                                                        <div class="fs-2 fw-semibold">Sub Total</div>
+                                                                        <div class="fs-3 fw-bold subtotal">
+                                                                            {{ formatRupiah($productRo['total_price_sale']) }}</div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="d-flex align-items-end gap-2">
+                                                                    <div>
+                                                                        <label for="qty" class="text-muted fs-1">Memproses Sebanyak
+                                                                            ({{ $productPo->product->unit->code }})</label>
+                                                                        <div class="d-flex align-items-center gap-2">
+                                                                            {{ $productRo['qty'] }}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="flex-grow-1">
+                                                                        <label for="price_buy" class="text-muted fs-1">Dengan Harga Jual</label>
+                                                                        <div>{{ formatRupiah($productRo['price_sale']) }}</div>
+                                                                    </div>
+                                                                    @if($roInvoice->purchaseOrder)
+                                                                    <div>
+                                                                        <label for="qty" class="text-muted fs-1">Dikemas Dengan </label>
+                                                                        <div class="d-flex align-items-center gap-2">
+                                                                            {{ $productPo->pack->name.' @ '.$productPo->pack->capacity.' '.$productPo->pack->unit->code }}
+                                                                        </div>
+                                                                    </div>
+                                                                    @endif
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                        <div class="pt-3 mt-3 border-top border-2">
+                                                            <div class="d-flex align-items-center gap-2 justify-content-between">
+                                                                <div class="fs-3 fw-semibold">Total</div>
+                                                                <div class="fs-4 fw-bold">{{ formatRupiah($roInvoice->product_qty_price['total_price']) }}</div>
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-2 justify-content-between">
+                                                                <div class="fs-3 fw-semibold">PPN</div>
+                                                                <div class="fs-4 fw-bold">{{ $roInvoice->product_qty_price['tax'] }}%</div>
+                                                            </div>
+                                                            <div class="d-flex align-items-center gap-2 justify-content-between">
+                                                                <div class="fs-3 fw-semibold">Grand Total</div>
+                                                                <div class="fs-4 fw-bold">{{ formatRupiah($roInvoice->product_qty_price['total_price_taxed']) }}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6>Statistik Pembayaran</h6>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Total Tagihan</div>
+                                        <h6 class="fs-2 fw-semibold text-secondary mb-1" style="">{{ $roInvoice->purchase_order_id ? formatRupiah($roInvoice->product_qty_price['total_price_taxed']) : formatRupiah($roInvoice->requestOrder->total_price_taxed) }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Dibayarkan</div>
+                                        <h6 class="fs-2 fw-semibold text-success mb-1" style="">{{ formatRupiah($roInvoice->sum_paid_total) }}</h6>
+                                    </div>
+                                    <div>
+                                        <div class="fw-normal fs-1 text-muted" style="white-space:normal;">Belum Dibayar</div>
+                                        <h6 class="fs-2 fw-semibold text-danger mb-1" style="">{{ formatRupiah($roInvoice->remaining_payment) }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                @else
                 <div class="p-4 text-center border border-dash">
                     Belum ada Invoice, Buat Invoice secara partial pada Pembelian ke Principal, atau Secara keseluruhan jika status Permintaan Client telah selesai.
                 </div>
-                @endforelse
+                @endif
                 
             </div>
             

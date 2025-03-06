@@ -30,7 +30,7 @@ class ProductController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.products,name',
-            // 'pack_id' => 'required|string|exists:osano.packs,id',
+            'unit_id' => 'required|string|exists:osano.units,id',
             'description' => 'nullable|string',
         ]);
         try {
@@ -40,7 +40,7 @@ class ProductController extends Controller
                 $product->image = $imagePath;
             }
             $product->name = $request->get('name');
-            // $product->pack_id = $request->get('pack_id');
+            $product->unit_id = $request->get('unit_id');
             $product->description = $request->get('description');
             $product->save();
 
@@ -61,7 +61,7 @@ class ProductController extends Controller
         $request->validate([
             'image' => 'nullable|image|mimes:webp,png,jpg,jpeg,jfif,svg|max:2048',
             'name' => 'required|string|min:3|unique:osano.products,name,'.$id,
-            // 'pack_id' => 'required|string|exists:osano.packs,id',
+            'unit_id' => 'required|string|exists:osano.units,id',
             'description' => 'nullable|string',
         ]);
 
@@ -75,7 +75,7 @@ class ProductController extends Controller
                 $product->image = $imagePath;
             }
             $product->name = $request->get('name');
-            // $product->pack_id = $request->get('pack_id');
+            $product->unit_id = $request->get('unit_id');
             $product->description = $request->get('description');
             $product->save();
 

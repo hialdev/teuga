@@ -25,9 +25,9 @@ class PurchaseOrder extends Model
             $model->code = self::getCode();
         });
         static::deleting(function ($model) {
-            $model->transport->delete();
-            $model->products->each->delete();
-            $model->files->each->delete();
+            $model?->transport?->delete();
+            $model?->products?->each->delete();
+            $model?->files?->each->delete();
         });
     }
 
