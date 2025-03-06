@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class RequestOrderPayment extends Model
+{
+    use HasFactory;
+    protected $guard = ['id'];
+    protected $connection = 'osano';
+    protected $table = 'request_order_payments';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    /**
+     * Set UUID otomatis sebelum menyimpan data
+     */
+    protected static function booted()
+    {
+        static::creating(function ($model) {
+            $model->id = (string) Str::uuid();
+            $model->code = (string) self::getCode();
+        });
+        static::deleting(function ($model) {
+            if ($model->file) {
+                Storage::disk('public')->delete($model->file);
+            }
+        });
+    }
+
+    protected static function getCode()
+    {
+        $type = 'PAID-CL'; // Purchase Order Principal
+        $lastRecord = self::whereYear('created_at', '=', date('Y'))
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $lastNumber = $lastRecord ? intval(explode('/', $lastRecord->code)[1]) : 0;
+
+        $newNumber = $lastNumber + 1;
+
+        return generateCode($type, $newNumber); // Fungsi generateCode dengan nilai default
+    }
+
+    public function invoice(){
+        return $this->belongsTo(RequestOrderInvoice::class, 'request_order_invoice_id');
+    }
+
+    public function transactions()
+    {
+        return $this->belongsToMany(Transaction::class, 'ro_payment_transactions', 'ro_payment_id', 'transaction_id')
+            ->withTimestamps();
+    }
+}
