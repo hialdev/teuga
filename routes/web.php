@@ -66,7 +66,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // -------------- Unauthenticated routes ------------------
 
-Route::middleware(['auth'])->group(function(){
+Route::middleware(['auth', 'check.app.permission'])->group(function(){
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
     

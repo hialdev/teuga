@@ -30,6 +30,11 @@ class ApplicationSeeder extends Seeder
                 'name' => 'osano',
                 'url' => 'http://osn.teuga.test',
             ],
+            [
+                'code' => 'ACCOUNTING',
+                'name' => 'Accounting',
+                'url' => 'http://calc.teuga.test',
+            ],
         ];
 
         foreach ($applications as $app) {

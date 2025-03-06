@@ -15,7 +15,7 @@ class UserController extends Controller
         if($user->getRoleNames()[0] == 'developer'){
             $users = User::where('id', '!=', $user->id)->get();
         }else if($user->getRoleNames()[0] == 'admin'){
-            $users = User::role(['admin','employee'])->get();
+            $users = User::withoutRole(['developer'])->get();
         }else{
             return redirect()->route('home')->with('error', 'Anda dialihkan karena tidak ada akses ke halaman sebelumnya.');
         }
