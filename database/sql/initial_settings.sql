@@ -14,24 +14,7 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Dumping structure for table teuga_sso.settings
-CREATE TABLE IF NOT EXISTS `settings` (
-  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '8abd3b20-9bef-45ec-af96-10c738a54663',
-  `group` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `group_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `input_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'text',
-  `value` text COLLATE utf8mb4_unicode_ci,
-  `is_urgent` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `settings_key_unique` (`key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dumping data for table teuga_sso.settings: ~29 rows (approximately)
+-- Dumping data for table teuga_sso.settings: ~30 rows (approximately)
 REPLACE INTO `settings` (`id`, `group`, `group_key`, `name`, `key`, `description`, `input_type`, `value`, `is_urgent`, `created_at`, `updated_at`) VALUES
 	('0dce868d-08f8-4c65-8904-3636ae2af53d', 'Site', 'site', 'Logo', 'logo', 'Logo untuk website', 'image', 'settings/9N6DchS86PIbkPnYtb44K7tKSH6aH1qR0PTs5Izl.png', 1, '2024-12-25 21:05:21', '2025-01-17 13:05:37'),
 	('12a3f22f-750c-4e06-8c2e-6cccfb50dcb6', 'Letter', 'letter', 'Background Surat', 'background', 'Kop Surat A4', 'image', 'settings/V3Kg9S8VFkWP5NHTDNut6ijLcKWZ2gEdpfUDd1MH.png', 1, '2025-02-03 04:42:34', '2025-02-03 04:43:24'),
@@ -56,8 +39,10 @@ REPLACE INTO `settings` (`id`, `group`, `group_key`, `name`, `key`, `description
 	('a4ac5a3e-a71b-4f3a-8364-6bf5e1a46872', 'Company', 'company', 'Company Legal Name', 'legal-name', 'Nama Perusahaan untuk keperluan sistem lebih lanjut', 'text', 'PT Rizq Sahara Multindo', 1, '2025-01-23 17:10:32', '2025-01-23 17:10:47'),
 	('a888e029-7e36-497a-b27b-27085de77d0f', 'Company', 'company', 'Company Address', 'address', 'Alamat Company untuk keperluan sistem lebih lanjut', 'textarea', 'Rukan Tanjung Mas Raya Blok B1/42 Lt.3, Tanjung Barat, Jagakarsa, Jakarta Selatan, Indonesia. 12530', 1, '2025-01-23 17:04:07', '2025-01-23 17:13:21'),
 	('b2786502-1224-46fd-9062-2de265aa07aa', 'Site', 'site', 'Dashboard - Button Text', 'dashboard-button-text', 'Text untuk tombol pada header dashboard', 'text', 'Custom Order', 1, '2024-12-25 21:07:36', '2024-12-25 21:09:36'),
+	('bab1bbf0-31d3-4ceb-b8aa-3c84bd8f2251', 'Letter', 'letter', 'Kop Header', 'kop-header', 'Kop bagian atas pada surat', 'image', 'settings/kALbGmjep5xhEVWUAl51a0etXxd71zjs9wlvYn62.png', 1, '2025-02-28 02:37:14', '2025-02-28 02:38:34'),
 	('cbe5cd7b-c416-4818-aa54-907d75415104', 'Theme', 'theme', 'Button Hover Border', 'btn-hover-border', 'Nilai default \'#a47d42\'', 'text', '#EC6C35', 1, '2024-12-26 05:18:28', '2025-01-17 13:20:57'),
 	('cf966a94-8ba8-47b6-89d7-f8eac3636e54', 'Site', 'site', 'Dashboard - Greeting', 'dashboard-greeting', 'Title ucapan pada header dashboard', 'text', 'Masukan nilai PPN, contoh 11 untuk PPN 11%', 1, '2024-12-25 21:06:51', '2024-12-25 21:09:55'),
+	('db00b99e-884b-4c25-860d-eda0cc1d5cfe', 'Letter', 'letter', 'Kop Footer', 'kop-footer', 'Kop bagian bawah surat', 'image', 'settings/f7rX5J0gXzSxgXDULOa3cL0MdxrGOKwAG8NY5gWR.png', 1, '2025-02-28 02:37:52', '2025-02-28 02:38:54'),
 	('e2786502-1344-46fd-7062-2de265ba15aa', 'Site', 'site', 'PPN %', 'ppn', 'Nilai PPN, contoh 11 untuk PPN 11%', 'number', '11', 1, '2024-12-25 21:07:36', '2024-12-25 21:09:36'),
 	('eae2fc2d-1231-4390-b458-80a15be81d83', 'Site', 'site', 'Product Limit', 'product-limit', 'Tentukan berapa item yang ditampilkan per halaman saat menampilkan data produk di Permintaan Client atau Pembelian ke Principal', 'number', '6', 1, '2025-02-01 07:57:09', '2025-02-05 04:53:07'),
 	('ed186bd9-6cad-471e-97c6-6c8660c51375', 'Theme', 'theme', 'Primary Color', 'primary-color', 'Nilai default #926e38', 'text', 'linear-gradient(77deg, #59A2D0 -8.9%, #44528D 25.39%, #E6443A 63.02%, #EC6C35 79.98%, #F18D2D 98.28%)', 1, '2024-12-26 05:15:02', '2025-01-19 12:43:46'),
