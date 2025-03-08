@@ -95,7 +95,7 @@ class PurchaseOrderController extends Controller
         if ($request->filled('hashProduct')) {
             session(['redirect_hash' => 'produk']);
         }
-        dd(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice);
+        //dd(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice->purchase_order_id == $purchase->id);
         return view('purchase_orders.setting', compact('reqorders', 'transports', 'principals', 'pics', 'purchase', 'filter', 'products'));
     }
 
