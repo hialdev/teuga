@@ -349,7 +349,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">Tidak ada data untuk Periode {{\App\Models\TransactionPeriod::find($filter->period)->name}}</td>
+                                <td colspan="6" class="text-center">Tidak ada data untuk Periode yang dipilih</td>
                             </tr>
                         @endforelse
                     </tbody>
