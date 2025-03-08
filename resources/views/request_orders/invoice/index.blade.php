@@ -185,7 +185,7 @@
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <li>
-                                                <button type="button" class="dropdown-item d-flex text-white bg-primary align-items-center gap-3"
+                                                <button type="button" class="dropdown-item d-flex text-white align-items-center gap-3"
                                                     style="background:rgb(186, 55, 55); border-color:rgb(186, 55, 55)"
                                                     onclick="seePDF('pdf.partial','{{$roInvoice->id}}')"><i
                                                         class="fs-4 ti ti-printer"></i>Cetak Invoice</button>
