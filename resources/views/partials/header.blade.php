@@ -31,7 +31,7 @@
                         aria-expanded="false">
                         <div class="d-flex align-items-center">
                             <div class="user-profile-img">
-                                <img src="{{ auth()->user() && auth()->user()->image ? '/storage/'. auth()->user()->image : '/assets/images/profile/user-1.jpg' }}"
+                                <img src="{{ auth()->user() && auth()->user()->image ? filePath(auth()->user()->image) : '/assets/images/profile/user-1.jpg' }}"
                                     class="rounded-circle" width="35" height="35" style="object-fit: cover"
                                     alt="Image User of {{ auth()->user() ? auth()->user()->name : 'Pengujung Lagi' }}" />
                             </div>
@@ -44,7 +44,7 @@
                                 <h5 class="mb-0 fs-5 fw-semibold">User Profile</h5>
                             </div>
                             <div class="d-flex align-items-center py-9 mx-7 border-bottom">
-                                <img src="{{ auth()->user() && auth()->user()->image ? '/storage/'. auth()->user()->image : '/assets/images/profile/user-1.jpg' }}"
+                                <img src="{{ auth()->user() && auth()->user()->image ? filePath(auth()->user()->image) : '/assets/images/profile/user-1.jpg' }}"
                                     class="rounded-circle" width="80" height="80" style="object-fit: cover"
                                     alt="Again Image User of {{ auth()->user() ? auth()->user()->name : 'Pengunjung'}}" />
                                 <div class="ms-3">
