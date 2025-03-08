@@ -148,10 +148,14 @@ if (!function_exists('isPdf')) {
 
 if (!function_exists('getDataPeriod')){
     function getDataPeriod(){
-        $period = TransactionPeriod::whereYear('start_date', now()->year)->first();
-        $periodLast = TransactionPeriod::orderBy('start_date', 'desc')->first();
-        $selectedPeriod = $period ?? $periodLast;
-        return $selectedPeriod;
+        if(TransactionPeriod::count() > 0){
+            $period = TransactionPeriod::whereYear('start_date', now()->year)->first();
+            $periodLast = TransactionPeriod::orderBy('start_date', 'desc')->first();
+            $selectedPeriod = $period ?? $periodLast;
+            return $selectedPeriod;
+        }
+
+        return null;
     }
 }
 

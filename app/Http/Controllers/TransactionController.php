@@ -12,7 +12,7 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedPeriodId = getDataPeriod()->id;
+        $selectedPeriodId = getDataPeriod() ? getDataPeriod()->id : null;
         $filter = (object) [
             'q' => $request->get('search') ?? '',
             'field' => $request->get('field') ?? 'code',
