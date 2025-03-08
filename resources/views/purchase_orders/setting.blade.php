@@ -1218,7 +1218,7 @@
                         </div>
                     </div>
 
-                    @if(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice && $purchase->requestOrder->invoice->purchaseOrder)
+                    @if(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice)
                     <!-- invoicing Modal -->
                     <div class="modal fade" id="partialClientInvoiceModal-{{$purchase->id}}" tabindex="-1"
                         aria-labelledby="vertical-center-modal" aria-hidden="true">
