@@ -113,14 +113,14 @@ table.second-table>thead,table.second-table>tbody{
   $invoice = \App\Models\RequestOrderInvoice::find($id);
 @endphp
 
-@section('title', 'Invoice Partial '.$invoice->code.' - Dari Nomor Permintaan '.$invoice->requestOrder->no_refrence.' / '.$invoice->requestOrder->code)
+@section('title', 'Invoice '.$invoice->code.' - Dari Nomor Permintaan '.$invoice->requestOrder->no_refrence.' / '.$invoice->requestOrder->code)
 
 @section('content')
 <!-- Print content -->
 <div class="page">
     <div class="subpage" id='editor-container'>
         <div class="text-center mb-3">
-            <h4 class="mb-0 text-uppercase">Invoice Partial</h4>
+            <h4 class="mb-0 text-uppercase">Invoice</h4>
             <div class="fw-bold">{{$invoice->code}}</div>
         </div>
         <div class="text-end">Date: {{\Carbon\Carbon::parse($invoice->created_at)->format('d F Y')}}</div>
