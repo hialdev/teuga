@@ -980,7 +980,7 @@
                                     </div>
                                     <div class="d-flex align-items-center gap-2">
                                         <a href="{{route('purchase-order.invoice.show', $purchase->invoice->id)}}" target="_blank" class="btn btn-primary"><i class="ti ti-credit-card me-2"></i>Pembayaran</a>
-                                        @if(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice && $purchase->requestOrder->invoice->purchaseOrder)
+                                        @if(!$purchase->clientInvoice && $purchase->requestOrder && !$purchase->requestOrder->invoice && !$purchase->requestOrder->invoice->purchaseOrder)
                                             <button data-bs-toggle="modal" data-bs-target="#partialClientInvoiceModal-{{$purchase->id}}" class="btn btn-secondary" style=""><i class="ti ti-file-invoice"></i> Buat Partial Invoice</button>
                                         @endif
                                     </div>
