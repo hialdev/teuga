@@ -216,7 +216,7 @@ class RequestOrderController extends Controller
             $reqorder->generate_invoice = 1;
             $reqorder->save();
 
-            return redirect()->route('request-order.setting', $id)->with('success', 'Generate Invoice untuk Pembelian Principal kode '.$purchase->code.' berhasil dilakukan.')
+            return redirect()->route('request-order.setting', $id)->with('success', 'Generate Invoice untuk Permintaan Client dengan kode '.$reqorder->code.' berhasil dilakukan.')
                             ->with('redirect_hash', 'invoice');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Gagal Generate Invoice, Error: '.$e->getMessage())->with('redirect_hash', 'invoice');
