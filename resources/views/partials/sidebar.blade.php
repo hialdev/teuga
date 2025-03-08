@@ -5,7 +5,7 @@
         <!-- ---------------------------------- -->
         <div class="brand-logo d-flex align-items-center justify-content-between">
             <a href="{{ route('home') }}" class="text-nowrap logo-img">
-                <img src="/storage/{{setting('site.logo')}}" class="{{env('APP_NAME')}}" alt="{{env('APP_NAME')}} Logo in Sidebar"
+                <img src="{{filePath(setting('site.logo'))}}" class="{{env('APP_NAME')}}" alt="{{env('APP_NAME')}} Logo in Sidebar"
                     style="height: 3em; width:auto; object-fit:contain;" />
             </a>
             <a href="javascript:void(0)" class="sidebartoggler ms-auto text-decoration-none fs-5 d-block d-xl-none">

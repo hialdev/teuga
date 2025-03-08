@@ -13,7 +13,7 @@
     <title>{{ config('app.name', 'Tanur Muthmainnah') }}</title>
 
     <!-- Favicon icon-->
-    <link rel="shortcut icon" type="image/png" href="/storage/{{setting('site.logo')}}" />
+    <link rel="shortcut icon" type="image/png" href="{{filePath(setting('site.logo'))}}" />
 
     <!-- Owl Carousel  -->
     <link rel="stylesheet" href="/assets/libs/owl.carousel/dist/assets/owl.carousel.min.css" />
@@ -29,7 +29,7 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="/storage/{{setting('site.logo')}}" alt="loader" class="lds-ripple img-fluid" />
+        <img src="{{filePath(setting('site.logo'))}}" alt="loader" class="lds-ripple img-fluid" />
     </div>
     <div id="main-wrapper">
         @include('partials.sidebar')
