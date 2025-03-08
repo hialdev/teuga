@@ -185,6 +185,12 @@
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                             <li>
+                                                <button type="button" class="dropdown-item d-flex text-white bg-primary align-items-center gap-3"
+                                                    style="background:rgb(186, 55, 55); border-color:rgb(186, 55, 55)"
+                                                    onclick="seePDF('pdf.partial','{{$roInvoice->id}}')"><i
+                                                        class="fs-4 ti ti-printer"></i>Cetak Invoice</button>
+                                            </li>
+                                            <li>
                                                 <a href="{{route('request-order.invoice.show', $roInvoice->id)}}" class="dropdown-item d-flex align-items-center gap-3 bg-primary text-white"><i
                                                         class="fs-4 ti ti-credit-card"></i>Kelola</a>
                                             </li>
