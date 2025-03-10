@@ -389,7 +389,7 @@
                     </div>
                     @forelse($poInvoice->transactions as $trx)
                     <div class="mt-2 p-3 bg-primary-subtle rounded-3">
-                        <a href="{{route('transaction.index', ['search' => $trx->code])}}" class="fw-semibold d-flex align-items-center gap-2"><div class="badge text-bg-primary rounded-pill">Generated</div><div>{{$trx->code}}</div> <div class="ms-auto fs-1">{{\Carbon\Carbon::parse($trx->created_at)->format('d M Y')}}</div></a>
+                        <a href="{{route('transaction.index', ['search' => $trx->code])}}" class="fw-semibold d-flex flex-wrap align-items-center gap-2"><div class="badge text-bg-primary rounded-pill">Generated</div><div>{{$trx->code}}</div> <div class="ms-auto fs-1">{{\Carbon\Carbon::parse($trx->created_at)->format('d M Y')}}</div></a>
                     </div>
                     @empty
                     <form action="{{route('purchase-order.invoice.generateTrx')}}" method="POST">
@@ -442,7 +442,7 @@
                             <div class="col-12">
                                 @forelse($pay->transactions as $trx)
                                 <div class="mt-2 p-3 bg-primary-subtle rounded-3">
-                                    <a href="{{route('transaction.index', ['search' => $trx->code])}}" class="fw-semibold d-flex align-items-center gap-2"><div class="badge text-bg-primary rounded-pill">Generated</div><div>{{$trx->code}}</div> <div class="ms-auto fs-1">{{\Carbon\Carbon::parse($trx->created_at)->format('d M Y')}}</div></a>
+                                    <a href="{{route('transaction.index', ['search' => $trx->code])}}" class="fw-semibold d-flex flex-wrap align-items-center gap-2"><div class="badge text-bg-primary rounded-pill">Generated</div><div>{{$trx->code}}</div> <div class="ms-auto fs-1">{{\Carbon\Carbon::parse($trx->created_at)->format('d M Y')}}</div></a>
                                 </div>
                                 @empty
                                 <button class="btn btn-primary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#generatePaymentTrxModal-{{$pay->id}}">Catat Pembayaran {{$pay->code}} ke Jurnal</button>

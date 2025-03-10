@@ -211,7 +211,7 @@
         <div class="fixed-profile p-3 mx-4 mb-2 bg-secondary-subtle rounded mt-3">
             <div class="hstack gap-3">
                 <div class="john-img">
-                    <img src="{{ auth()->user() && auth()->user()->image ? '/storage/'. auth()->user()->image : '/assets/images/profile/user-1.jpg' }}"
+                    <img src="{{ auth()->user() && auth()->user()->image ? filePath(auth()->user()->image) : '/assets/images/profile/user-1.jpg' }}"
                         class="rounded-circle" width="40" height="40" style="object-fit: cover"
                         alt="Image User {{ auth()->user() ? auth()->user()->name : 'Pengunjung' }}" />
                 </div>
