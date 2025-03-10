@@ -19,7 +19,7 @@
 
             <div class="d-block ms-auto d-lg-none" style="width: fit-content">
                 <a href="{{ route('home') }}" class="text-nowrap logo-img">
-                    <img src="/storage/{{setting('site.logo')}}" class="" alt="{{env('APP_NAME')}} Logo" style="height: 3em" />
+                    <img src="{{filePath(setting('site.logo'))}}" class="" alt="{{env('APP_NAME')}} Logo" style="height: 3em" />
                 </a>
             </div>
             <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">

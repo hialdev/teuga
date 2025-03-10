@@ -29,7 +29,7 @@
 <body>
     <!-- Preloader -->
     <div class="preloader">
-        <img src="/storage/{{setting('site.logo')}}" alt="loader" class="lds-ripple img-fluid" />
+        <img src="{{filePath(setting('site.logo'))}}" alt="loader" class="lds-ripple img-fluid" />
     </div>
     <div id="main-wrapper">
         @include('partials.sidebar')
