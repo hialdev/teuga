@@ -111,7 +111,6 @@ table.second-table>thead,table.second-table>tbody{
 
 @php
   $invoice = \App\Models\RequestOrderInvoice::find($id);
-  dd($invoice, $invoice?->purchaseOrder);
 @endphp
 
 @section('title', 'Invoice '.$invoice->code.' - Dari Nomor Permintaan '.$invoice->requestOrder->no_refrence.' / '.$invoice->requestOrder->code)
@@ -132,13 +131,17 @@ table.second-table>thead,table.second-table>tbody{
                     <td width="10" class="pl-1 pr-1">:</td>
                     <td>{{$invoice->requestOrder->no_refrence}}</td>
                 </tr>
-                @if($invoice->purchaseOrder->delivery)
+                @php
+                $delivery = $invoice->requestOrder->purchaseOrders[0]->delivery;
+                if($invoice->purchaseOrder){
+                    $delivery = $invoice->purchaseOrder->delivery;
+                }
+                @endphp
                 <tr>
                     <th width="90">Project Location</th>
                     <td width="10" class="pl-1 pr-1">:</td>
-                    <td>{{$invoice->purchaseOrder->delivery->name}} - {{$invoice->purchaseOrder->delivery->address}}, {{$invoice->purchaseOrder->delivery->city}}. {{$invoice->purchaseOrder->delivery->postal_code}}</td>
+                    <td>{{$delivery->name}} - {{$delivery->address}}, {{$delivery->city}}. {{$delivery->postal_code}}</td>
                 </tr>
-                @endif
                 <tr>
                     <th width="90">Customer Name</th>
                     <td width="10" class="pl-1 pr-1">:</td>
@@ -165,9 +168,15 @@ table.second-table>thead,table.second-table>tbody{
                 </thead>
                 <tbody>
                     @php
+                    $products = $invoice->requestOrder->products;
+                    if($invoice->purchaseOrder){
+                        $products = $invoice->purchaseOrder->products;
+                    }
+                    @endphp
+                    @php
                         $totalPrice = 0;
                     @endphp
-                    @foreach ($invoice->purchaseOrder->products as $product)
+                    @foreach ($products as $product)
                     @php
                         $reqproduct = \App\Models\RequestOrderProduct::where('product_id', $product->product_id)->where('request_order_id', $invoice->requestOrder->id)->firstOrFail();
                         $totalPrice += $reqproduct->price_sale * $product->qty;
