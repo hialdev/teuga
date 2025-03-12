@@ -131,11 +131,13 @@ table.second-table>thead,table.second-table>tbody{
                     <td width="10" class="pl-1 pr-1">:</td>
                     <td>{{$invoice->requestOrder->no_refrence}}</td>
                 </tr>
+                @if($invoice->purchaseOrder->delivery)
                 <tr>
                     <th width="90">Project Location</th>
                     <td width="10" class="pl-1 pr-1">:</td>
                     <td>{{$invoice->purchaseOrder->delivery->name}} - {{$invoice->purchaseOrder->delivery->address}}, {{$invoice->purchaseOrder->delivery->city}}. {{$invoice->purchaseOrder->delivery->postal_code}}</td>
                 </tr>
+                @endif
                 <tr>
                     <th width="90">Customer Name</th>
                     <td width="10" class="pl-1 pr-1">:</td>
