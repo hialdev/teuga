@@ -403,7 +403,7 @@
                                         </ul>
                                     </div>
                                 @endif
-                                <form action="{{ route('purchase-order.store')}}" method="POST" enctype="multipart/form-data">
+                                <form action="{{ route('purchase-order.update', $purchase->id)}}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="mb-4">
                                         <label class="form-label fw-semibold">Tanggal Pembelian</label>
