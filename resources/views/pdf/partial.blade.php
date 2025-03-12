@@ -132,7 +132,8 @@ table.second-table>thead,table.second-table>tbody{
                     <td>{{$invoice->requestOrder->no_refrence}}</td>
                 </tr>
                 @php
-                $delivery = $invoice->requestOrder?->purchaseOrders;
+                $purchases = $invoice->requestOrder?->purchaseOrders;
+                $delivery = $purchases[0];
                 if($invoice->purchaseOrder){
                     $delivery = $invoice?->purchaseOrder?->delivery;
                 }
