@@ -137,6 +137,7 @@ table.second-table>thead,table.second-table>tbody{
                 if($invoice->purchaseOrder){
                     $delivery = $invoice?->purchaseOrder?->delivery;
                 }
+                dd($delivery);
                 @endphp
                 <tr>
                     <th width="90">Project Location</th>
