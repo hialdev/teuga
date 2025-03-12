@@ -50,6 +50,9 @@ class PurchaseOrderController extends Controller
             'is_handle_logistic' => 'nullable|boolean',
             'description' => 'nullable|string|min:4',
         ]);
+        if(($request->get('request_order_id') && !$request->get('delivery_address_id')) || (!$request->get('request_order_id') && $request->get('delivery_address_id'))){
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui Pembelian ke Principal, Error: Jika terkait dengan Permintaan Client tentukan Juga Alamat Proyek Pengiriman');
+        }
         try {
             $purchase = new PurchaseOrder();
             $purchase->date = $request->get('date');
@@ -112,6 +115,9 @@ class PurchaseOrderController extends Controller
             'is_handle_logistic' => 'nullable|boolean',
             'description' => 'nullable|string|min:4',
         ]);
+        if(($request->get('request_order_id') && !$request->get('delivery_address_id')) || (!$request->get('request_order_id') && $request->get('delivery_address_id'))){
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui Pembelian ke Principal, Error: Jika terkait dengan Permintaan Client tentukan Juga Alamat Proyek Pengiriman');
+        }
         try {
             if($purchase->status != '0'){
                 return redirect()->back()->withInput()->with('error', 'Gagal memperbarui Pembelian ke Principal, Error: Status tidak diizinkan untuk diperbarui');
